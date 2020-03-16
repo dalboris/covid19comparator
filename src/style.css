@@ -1,0 +1,52 @@
+body, div, p, h1, h2, h3, h4, h5, h6, ul, ol, li, table, tr, td, label {
+    margin: 0px;
+    padding: 0px;
+}
+
+a {
+    color: #0059ff;
+    text-decoration: none;
+}
+
+div, svg {
+    display: block;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    background-color: #ffffff;
+    color: #222222;
+    line-height: 1.4;
+}
+
+h1, h2, h3 {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 48px;
+    margin: 30px 20px;
+}
+
+p, li {
+    margin: 20px 20px;
+}
+
+@media screen and (max-width: 600px) {
+    h1, h2, h3 {
+        font-size: 24px;
+        margin: 20px 10px;
+    }
+
+    p, li, a {
+        font-size: 12px;
+        margin: 10px 10px;
+    }
+}
+
+#content {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
