@@ -12,7 +12,7 @@ sudo apt install unoconv # xls to csv conversion
 
 # How to update data?
 
-For now, it's now fully automatic. Example below for 2020-03-16. Change date accordingly.
+For now, it's not fully automatic. Example below for 2020-03-16. Change date accordingly.
 
 ```
 cd covid19comparator
