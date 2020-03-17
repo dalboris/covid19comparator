@@ -8,7 +8,7 @@ a {
     text-decoration: none;
 }
 
-div, svg {
+div, svg, label, select {
     display: block;
 }
 
@@ -18,31 +18,33 @@ body {
     font-style: normal;
     background-color: #ffffff;
     color: #222222;
-    line-height: 1.4;
+    line-height: 1.7;
 }
 
-h1, h2, h3 {
+h1, h2, h3, label {
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 48px;
-    margin: 30px 20px;
 }
 
-p, li {
-    margin: 20px 20px;
-}
+h1, h2, h3 { font-size: 48px; }
+label      { font-size: 18px; }
+p, li      { font-size: 16px; }
+
+h1, h2, h3, label, p, li, select { margin-left: 20px; margin-right: 20px; }
+
+h1, h2, h3    { margin-top: 30px; margin-bottom: 30px;}
+p, li         { margin-top: 20px; margin-bottom: 20px;}
+label, select { margin-top: 10px; margin-bottom: 10px;}
 
 @media screen and (max-width: 600px) {
-    h1, h2, h3 {
-        font-size: 24px;
-        margin: 20px 10px;
-    }
+    h1, h2, h3 { font-size: 24px; }
+    label      { font-size: 14px; }
+    p, li      { font-size: 12px; }
 
-    p, li {
-        font-size: 12px;
-        margin: 10px 10px;
-    }
+    p, li, label, select, h1, h2, h3 { margin-left: 10px; margin-right: 10px; }
+
+    h1, h2, h3 { margin-top: 20px; margin-bottom: 20px; }
 }
 
 #content {
@@ -56,17 +58,23 @@ p, li {
     padding: 0px;
 }
 
-path.line-0 {
+path.line {
     fill: none;
-    stroke: #ff4343;
 }
 
-path.line-1 {
-    fill: none;
-    stroke: #437fff;
-}
-
-path.line-2 {
-    fill: none;
-    stroke: #488638;
-}
+path.line-0 { stroke: #ff4343; }
+path.line-1 { stroke: #437fff; }
+path.line-2 { stroke: #488638; }
+path.line-3 { stroke: #61a5a4; }
+path.line-4 { stroke: #e23df9; }
+path.line-5 { stroke: #fa0d1d; }
+path.line-6 { stroke: #c6a1bb; }
+path.line-7 { stroke: #d6c51c; }
+path.line-8 { stroke: #28985f; }
+path.line-9 { stroke: #5acb89; }
+path.line-10 { stroke: #b5026c; }
+path.line-11 { stroke: #c8dab4; }
+path.line-12 { stroke: #1e1dd5; }
+path.line-13 { stroke: #f287a6; }
+path.line-14 { stroke: #ec40f2; }
+path.line-15 { stroke: #ed2f0f; }
