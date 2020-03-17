@@ -29,6 +29,6 @@ read -p "WARNING! This will deploy to production. Are you sure? (y/n) " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     echo ""
-    rsync -rtvz -e 'ssh' src/ covid19comparator:covid19comparator
+    rsync -rtvz -e 'ssh' out/ covid19comparator:covid19comparator
 fi
 echo ""
