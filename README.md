@@ -16,5 +16,6 @@ For now, it's now fully automatic. Example below for 2020-03-16. Change date acc
 
 ```
 cd covid19comparator
-./scrape_data 2020-03-16
+./scrape_data.sh 2020-03-16
+./jsonify_data.py
 ```
