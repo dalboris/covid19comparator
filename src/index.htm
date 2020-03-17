@@ -8,7 +8,7 @@
     <meta name="author" content="Boris Dalstein Software">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto:300,400&display=swap" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/5.15.0/d3.min.js"></script>
     <script src="covid19.js"></script>
   </head>
   <body>
@@ -16,8 +16,9 @@
 
       <h1>Coronavirus Comparator</h1>
 
-      <p>This website is under construction.</p>
+      <div id="covid19"></div>
 
+      <!--
       <p>It will allow you to compare the number of cases and/or deaths of
       COVID-19 (a.k.a. coronavirus) across countries.</p>
 
@@ -70,7 +71,9 @@
       go to  work. Other essential administrative jobs for the country not to
       fall apart should quite obviously go to work. Otherwise, just stay
       home.</p>
-
+      -->
     </div>
+
+    <script>runCovid19()</script>
   </body>
 </html>

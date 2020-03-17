@@ -50,3 +50,23 @@ p, li {
     margin-left: auto;
     margin-right: auto;
 }
+
+.graph {
+    margin: 0px;
+    padding: 0px;
+}
+
+path.line-0 {
+    fill: none;
+    stroke: #ff4343;
+}
+
+path.line-1 {
+    fill: none;
+    stroke: #437fff;
+}
+
+path.line-2 {
+    fill: none;
+    stroke: #488638;
+}
