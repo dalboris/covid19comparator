@@ -28,27 +28,103 @@ h1, h2, h3, label {
     font-style: normal;
 }
 
-h1, h2, h3 { font-size: 36px; }
-label      { font-size: 18px; }
-p, li      { font-size: 16px; }
+p.author {
+    color: #555;
+}
 
-h1, h2, h3, label, p, li, select { margin-left: 20px; margin-right: 20px; }
+p.table-legend {
+    color: #555;
+    font-size: 11px;
+}
+
+h1, h2, h3         { font-size: 36px; }
+label              { font-size: 18px; }
+p, li, .tr-head td { font-size: 16px; }
+td                 { font-size: 14px; }
+
+h1, h2, h3, label, p, li, select/*, table*/ { margin-left: 20px; margin-right: 20px; }
 
 h1, h2, h3    { margin-top: 30px; margin-bottom: 30px;}
 p, li         { margin-top: 20px; margin-bottom: 20px;}
 label, select { margin-top: 10px; margin-bottom: 10px;}
 
-@media screen and (max-width: 600px) {
-    h1, h2, h3 { font-size: 24px; }
-    label      { font-size: 14px; }
-    p, li      { font-size: 12px; }
+table {
+    width: calc(100% - 40px);
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-    p, li, label, select, h1, h2, h3 { margin-left: 10px; margin-right: 10px; }
+tr {
+    width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+    h1, h2, h3         { font-size: 24px; }
+    label              { font-size: 14px; }
+    p, li, .tr-head td { font-size: 12px; }
+    td                 { font-size: 11px; }
+
+    h1, h2, h3, p, li, label, select { margin-left: 10px; margin-right: 10px; }
+    table                            { width: calc(100% - 20px) }
 
     h1, h2, h3 { margin-top: 20px; margin-bottom: 20px; }
 }
 
-#content {
+.td-date        { width: 20%; }
+.td-totaldeaths { width: 20%; }
+.td-growthrate  { width: 20%; }
+.td-growthcalc  { width: 30%; }
+
+/*
+@media screen and (max-width: 600px) {
+    .td-date        { width: 25%; }
+    .td-totaldeaths { width: 25%; }
+    .td-growthrate  { width: 25%; }
+    .td-growthcalc  { width: 25%; }
+}
+*/
+
+.td-growthcalc {
+    color: #555;
+    font-size: 10px;
+}
+
+td { text-align: left; }
+td.td-growthcalc  { text-align: left; }
+
+td             { padding: 5px 0px;}
+td:first-child { padding-left: 5px; }
+td:last-child  { padding-right: 5px; }
+
+.tr-current .td-name {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.tr-head td { vertical-align: bottom; }
+td          { vertical-align: top; }
+
+.tr-head td {
+    background-color: #eaedf5;
+}
+
+.tr-head td.td-growthcalc {
+    background: none;
+}
+
+br.break-at-small-sizes {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    br.break-at-small-sizes {
+        display: block;
+    }
+}
+
+.text {
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
