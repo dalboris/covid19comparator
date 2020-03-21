@@ -14,9 +14,9 @@ data = {}
 for line in ecdc_csv.splitlines()[1:]:
     row = line.split(',')
     date = datetime.datetime.strptime(row[0], '%m/%d/%Y').date().isoformat()
-    region = row[1]
-    new_cases = row[2]
-    new_deaths = row[3]
+    region = row[6]
+    new_cases = row[4]
+    new_deaths = row[5]
     # some rows have missing data, we assume zero
     if new_cases == "":
         new_cases = 0
