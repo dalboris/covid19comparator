@@ -149,6 +149,26 @@ function updateCovid19() {
     const dailyCasesData = getData("new_cases", regions);
     const dailyDeathsData = getData("new_deaths", regions);
 
+    // TODO: compute cumulated data.
+
+    // Dates
+    const dateParser = d3.timeParse("%Y-%m-%d");
+    dateFrom = dateParser(d3.select("#covid19 .date-selector .from").property("value"));
+    dateTo = dateParser(d3.select("#covid19 .date-selector .to").property("value"));
+    const dateFilter = function (d) {
+            return dateFrom <= d.date && d.date <= dateTo;
+    }
+
+    // Compute max daily cases
+    let maxDailyCases = 0;
+    dailyCasesData.forEach(function (d) { // For each country
+        d.values.forEach(function (d) { // For each date
+            if (dateFilter(d) && d.value > maxDailyCases) {
+                maxDailyCases = d.value;
+            }
+        });
+    });
+
     // SVG Element
     const width = 960;
     const height = 500;
@@ -165,13 +185,10 @@ function updateCovid19() {
     // Scales
     // For now we scale based on the first region
     // TODO: scale based all selected regions
-    const dateParser = d3.timeParse("%Y-%m-%d");
-    dateFrom = dateParser(d3.select("#covid19 .date-selector .from").property("value"));
-    dateTo = dateParser(d3.select("#covid19 .date-selector .to").property("value"));
     const xScale = d3.scaleTime().range([0, width]);
     const yScale = d3.scaleLinear().rangeRound([height, 0]);
     xScale.domain([dateFrom, dateTo]);
-    yScale.domain([0, d3.max(dailyCasesData[0].values, function(d){return d.value})]);
+    yScale.domain([0, maxDailyCases]);
 
     // Axes
     const yaxis = d3.axisLeft()
