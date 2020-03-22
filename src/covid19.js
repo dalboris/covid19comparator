@@ -73,7 +73,7 @@ function getData(category, regions) {
 //
 function appendRegionSelector(parent, regions) {
     const regionId = parent.selectAll(".region-selector").size();
-    const tr = parent.append("table").append("tr").classed("region-selector", true);
+    const tr = parent.append("table").append("tr").classed("region-selector", true).classed("margined", true);
     tr.append("td").append("svg").classed("region-color", true)
         .attr("viewBox", "0 0 40 20")
         .append("line")
@@ -94,20 +94,60 @@ function appendRegionSelector(parent, regions) {
     return selector;
 }
 
-// Append a date picker.
+// Append a date selector.
 //
-function appendDatePicker(parent) {
+function appendDateSelector(parent) {
     return parent
         .append("input")
         .attr("type", "date")
         .on("change", updateCovid19);
 }
 
+// Append a category selector.
+//
+function appendCategorySelector(parent) {
+    return parent
+        .append("input")
+        .attr("type", "checkbox")
+        .on("change", updateCovid19);
+}
+
+function updateLines(category, xScale, yScale, dateFrom, dateTo, data) {
+    const covid19 = d3.select("#covid19");
+    const checkbox = covid19.select("." + category + "-checkbox");
+    const lineGroup = covid19.select("." + category + "-lines");
+    if (checkbox.property("checked")) {
+        lineGroup.style("visibility", "visible");
+
+        const line = d3.line()
+            .x(function(d) { return xScale(d.date); })
+            .y(function(d) { return yScale(d.value); });
+
+        const lines = lineGroup.selectAll(".line").data(data);
+        lines.enter()
+            .append("path")
+                .attr("class", function(d) { return "line-" + d.id; })
+                .classed("line", true);
+        lines.exit()
+            .remove();
+
+        lineGroup.selectAll(".line").attr("d", function(d) {
+            return line(d.values.filter(function (d) {
+                return dateFrom <= d.date && d.date <= dateTo;
+            }));
+        });
+    }
+    else {
+        lineGroup.style("visibility", "hidden");
+    }
+}
+
 function updateCovid19() {
 
     // Data
     const regions = getSelectedRegions();
-    const data = getData("new_cases", regions);
+    const dailyCasesData = getData("new_cases", regions);
+    const dailyDeathsData = getData("new_deaths", regions);
 
     // SVG Element
     const width = 960;
@@ -131,7 +171,7 @@ function updateCovid19() {
     const xScale = d3.scaleTime().range([0, width]);
     const yScale = d3.scaleLinear().rangeRound([height, 0]);
     xScale.domain([dateFrom, dateTo]);
-    yScale.domain([0, d3.max(data[0].values, function(d){return d.value})]);
+    yScale.domain([0, d3.max(dailyCasesData[0].values, function(d){return d.value})]);
 
     // Axes
     const yaxis = d3.axisLeft()
@@ -156,23 +196,8 @@ function updateCovid19() {
         .call(yaxis);
 
     // Lines
-    const line = d3.line()
-        .x(function(d) { return xScale(d.date); })
-        .y(function(d) { return yScale(d.value); });
-
-    const lines = svg.selectAll(".line").data(data);
-    lines.enter()
-        .append("path")
-            .attr("class", function(d) { return "line-" + d.id; })
-            .classed("line", true);
-    lines.exit()
-        .remove();
-
-    svg.selectAll(".line").attr("d", function(d) {
-        return line(d.values.filter(function (d) {
-            return dateFrom <= d.date && d.date <= dateTo;
-        }));
-    });
+    updateLines("daily-cases", xScale, yScale, dateFrom, dateTo, dailyCasesData);
+    updateLines("daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
 }
 
 function runCovid19() {
@@ -189,16 +214,23 @@ function runCovid19() {
     selector2.property('value', 'Italy');
 
     // Date selectors
-    const dateSelector = covid19.append("div").classed("date-selector", true);
+    const dateSelector = covid19.append("div").classed("date-selector", true).classed("margined", true);
     dateSelector.append("label").text("From: ");
-    dateFrom = appendDatePicker(dateSelector).classed("from", true);
+    dateFrom = appendDateSelector(dateSelector).classed("from", true);
     dateSelector.append("br").classed("break-at-small-sizes", true);
     dateSelector.append("label").text("To: ");
-    dateTo = appendDatePicker(dateSelector).classed("to", true);
+    dateTo = appendDateSelector(dateSelector).classed("to", true);
     const t2 = new Date();
     const t1 = new Date(); t1.setDate(t1.getDate() - 30);
     dateFrom.property('value', t1.toISOString().split('T')[0]);
     dateTo.property('value', t2.toISOString().split('T')[0]);
+
+    // Category selector
+    const categorySelector = covid19.append("div").classed("category-selector", true).classed("margined", true);
+    appendCategorySelector(categorySelector).classed("daily-cases-checkbox", true).property("checked", true);
+    categorySelector.append("label").text(" Daily Cases");
+    appendCategorySelector(categorySelector).classed("daily-deaths-checkbox", true).property("checked", true);
+    categorySelector.append("label").text(" Daily Deaths");
 
     // SVG
     const svg = d3.select("div#covid19").append("svg")
@@ -206,11 +238,12 @@ function runCovid19() {
         .classed("graph", true);
 
     // Axes
-    svg.append("g").attr("class", "x axis")
-    svg.append("g").attr("class", "y axis")
+    svg.append("g").attr("class", "x axis");
+    svg.append("g").attr("class", "y axis");
 
     // Lines
-    //svg.append("g").attr("class", "lines")
+    svg.append("g").attr("class", "daily-cases-lines");
+    svg.append("g").attr("class", "daily-deaths-lines");
 
     updateCovid19();
 }
