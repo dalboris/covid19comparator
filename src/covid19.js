@@ -1,24 +1,51 @@
 
-// Given a category (e.g., "new_deaths"), get the data in the form:
+// Get a list of all regions. Example: [ "France", "Italy", "United_States_of_America" ]
+//
+function getAllRegions() {
+    const regions = [];
+    for (const region in covid19Data_) {
+        if (covid19Data_.hasOwnProperty(region)) {
+            regions.push(region);
+        }
+    }
+    return regions;
+}
+
+// Get a list of selected regions. Example: [ "France", "Italy" ]
+//
+function getSelectedRegions() {
+    const regions = [];
+    d3.selectAll(".region-selector").each(function (d) {
+        const region = d3.select(this).property('value');
+        regions.push(region);
+    });
+    return regions;
+}
+
+// Given a category (e.g., "new_deaths"), and a list of regions
+// (e.g., [ "France", "Italy" ]), get the data in the form:
 //
 // [
 //   {
+//     id: 0,
 //     region: "Italy",
 //     values: [ { date: <datetime>, value: 6230 }, ... ]
 //   },
 //   {
+//     id: 1,
 //     region: "France",
 //     values: [ { date: <datetime>, value: 3210 }, ... ]
 //   }
 // ]
 //
-function getDataForCategory(category) {
+function getData(category, regions) {
     const dateParser = d3.timeParse("%Y-%m-%d");
     const data = [];
+    let id = 0;
     for (const region in covid19Data_) {
-        if (covid19Data_.hasOwnProperty(region)) {
-            const values_ = covid19Data_[region][category]
-            values = []
+        if (regions.indexOf(region) != -1 && covid19Data_.hasOwnProperty(region)) {
+            const values_ = covid19Data_[region][category];
+            const values = [];
             for (const date in values_) {
                 if (values_.hasOwnProperty(date)) {
                     values.push({
@@ -28,6 +55,7 @@ function getDataForCategory(category) {
                 }
             }
             data.push({
+                id: id++,
                 region: region,
                 values: values
             });
@@ -36,32 +64,29 @@ function getDataForCategory(category) {
     return data;
 }
 
-function appendRegionSelector(parent, data) {
-    parent
-        .append("select")
+// Append a drop down menu to the given parent with all given regions as
+// options. Add an "onchange" event listener so that when users change their
+// selection, the updateCovid19() function is called.
+//
+function appendRegionSelector(parent, regions) {
+    const selector = parent.append("select");
+    selector
+        .attr("class", "region-selector")
+        .on("change", updateCovid19)
         .selectAll("option")
-        .data(data)
+        .data(regions)
         .enter()
         .append("option")
-        .text(function(d) { return d.region; })
-        .attr("value", function (d, i) {
-            return i;
-        });
+        .text(function(d) { return d; })
+        .attr("value", function (d, i) { return d; });
+    return selector;
 }
 
-function runCovid19() {
-
-    // App main container
-    const covid19 = d3.select("div#covid19");
+function updateCovid19() {
 
     // Data
-    const data = getDataForCategory("new_cases");
-    console.log(data);
-
-    // Region selectors
-    const regionselector = covid19.append("label").text("Countries to compare:");
-    appendRegionSelector(covid19, data)
-    appendRegionSelector(covid19, data)
+    const regions = getSelectedRegions();
+    const data = getData("new_cases", regions);
 
     // SVG Element
     const width = 960;
@@ -69,14 +94,12 @@ function runCovid19() {
     const margin = 5;
     const padding = 5;
     const adj = 50;
-    const svg = d3.select("div#covid19").append("svg")
-        .attr("preserveAspectRatio", "xMinYMin meet")
+    const svg = d3.select("div#covid19 svg")
         .attr("viewBox", "-"
               + adj + " -"
               + adj + " "
               + (width + adj*3) + " "
-              + (height + adj*3))
-        .classed("graph", true);
+              + (height + adj*3));
 
     // Scales
     // For now we scale based on the first region
@@ -89,29 +112,13 @@ function runCovid19() {
     // Axes
     const yaxis = d3.axisLeft()
         .scale(yScale);
+
     const xaxis = d3.axisBottom()
         .ticks(d3.timeDay.every(1))
         .tickFormat(d3.timeFormat('%b %d'))
         .scale(xScale);
 
-    // Lines
-    const line = d3.line()
-        .x(function(d) { return xScale(d.date); })
-        .y(function(d) { return yScale(d.value); });
-    const lines = svg.selectAll("lines")
-        .data(data)
-        .enter()
-        .append("g");
-    let id = 0;
-    const ids = function () { return "line-"+id++; }
-    lines.append("path")
-        .attr("class", ids)
-        .classed("line", true)
-        .attr("d", function(d) { return line(d.values); });
-
-    // Drawing
-    svg.append("g")
-        .attr("class", "axis")
+    svg.select(".x.axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xaxis)
       .selectAll("text")
@@ -120,9 +127,52 @@ function runCovid19() {
         .attr("dy", ".35em")
         .attr("transform", "rotate(90)")
         .style("text-anchor", "start");
-    svg.append("g")
-        .attr("class", "axis")
+
+    svg.select(".y.axis")
         .call(yaxis);
+
+    // Lines
+    const line = d3.line()
+        .x(function(d) { return xScale(d.date); })
+        .y(function(d) { return yScale(d.value); });
+
+    const lines = svg.selectAll(".line").data(data);
+    lines.enter()
+        .append("path")
+            .attr("class", function(d) { return "line-" + d.id; })
+            .classed("line", true);
+    lines.exit()
+        .remove();
+
+    svg.selectAll(".line").attr("d", function(d) { return line(d.values); });
+}
+
+function runCovid19() {
+
+    // App main container
+    const covid19 = d3.select("div#covid19");
+
+    // Region selectors
+    const regions = getAllRegions();
+    const regionselector = covid19.append("label").text("Countries to compare:");
+    const selector1 = appendRegionSelector(covid19, regions);
+    const selector2 = appendRegionSelector(covid19, regions);
+    selector1.property('value', 'France');
+    selector2.property('value', 'Italy');
+
+    // SVG
+    const svg = d3.select("div#covid19").append("svg")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .classed("graph", true);
+
+    // Axes
+    svg.append("g").attr("class", "x axis")
+    svg.append("g").attr("class", "y axis")
+
+    // Lines
+    //svg.append("g").attr("class", "lines")
+
+    updateCovid19();
 }
 
 ////START_DATA////
