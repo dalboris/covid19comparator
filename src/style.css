@@ -42,7 +42,7 @@ label              { font-size: 18px; }
 p, li, .tr-head td { font-size: 16px; }
 td                 { font-size: 14px; }
 
-h1, h2, h3, label, p, li, .region-selector { margin-left: 20px; margin-right: 20px; }
+h1, h2, h3, label, p, li, .region-selector, .date-selector { margin-left: 20px; margin-right: 20px; }
 
 h1, h2, h3       { margin-top: 30px; margin-bottom: 30px;}
 p, li            { margin-top: 20px; margin-bottom: 20px;}
@@ -67,8 +67,8 @@ tr {
     p, li, .tr-head td { font-size: 12px; }
     td                 { font-size: 11px; }
 
-    h1, h2, h3, p, li, label, .region-selector { margin-left: 10px; margin-right: 10px; }
-    table.table-growth                         { width: calc(100% - 20px) }
+    h1, h2, h3, p, li, label, .region-selector, .date-selector { margin-left: 10px; margin-right: 10px; }
+    table.table-growth                                         { width: calc(100% - 20px) }
 
     h1, h2, h3 { margin-top: 20px; margin-bottom: 20px; }
 }
@@ -148,6 +148,27 @@ br.break-at-small-sizes {
 .region-select {
     display: inline-block;
     height: 25px;
+}
+
+.date-selector {
+
+}
+
+.date-selector label, .date-selector input {
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 20px;
+}
+
+@media screen and (max-width: 600px) {
+    .date-selector label {
+        width: 50px;
+        text-align: right;
+    }
+}
+
+.date-selector input[type="date"]::-webkit-clear-button {
+    display: none;
 }
 
 .text {

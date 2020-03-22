@@ -94,6 +94,15 @@ function appendRegionSelector(parent, regions) {
     return selector;
 }
 
+// Append a date picker.
+//
+function appendDatePicker(parent) {
+    return parent
+        .append("input")
+        .attr("type", "date")
+        .on("change", updateCovid19);
+}
+
 function updateCovid19() {
 
     // Data
@@ -106,7 +115,7 @@ function updateCovid19() {
     const margin = 5;
     const padding = 5;
     const adj = 50;
-    const svg = d3.select("div#covid19 svg.graph")
+    const svg = d3.select("#covid19 svg.graph")
         .attr("viewBox", "-"
               + adj + " -"
               + adj + " "
@@ -116,9 +125,12 @@ function updateCovid19() {
     // Scales
     // For now we scale based on the first region
     // TODO: scale based all selected regions
+    const dateParser = d3.timeParse("%Y-%m-%d");
+    dateFrom = dateParser(d3.select("#covid19 .date-selector .from").property("value"));
+    dateTo = dateParser(d3.select("#covid19 .date-selector .to").property("value"));
     const xScale = d3.scaleTime().range([0, width]);
     const yScale = d3.scaleLinear().rangeRound([height, 0]);
-    xScale.domain(d3.extent(data[0].values, function(d){return d.date}));
+    xScale.domain([dateFrom, dateTo]);
     yScale.domain([0, d3.max(data[0].values, function(d){return d.value})]);
 
     // Axes
@@ -156,7 +168,11 @@ function updateCovid19() {
     lines.exit()
         .remove();
 
-    svg.selectAll(".line").attr("d", function(d) { return line(d.values); });
+    svg.selectAll(".line").attr("d", function(d) {
+        return line(d.values.filter(function (d) {
+            return dateFrom <= d.date && d.date <= dateTo;
+        }));
+    });
 }
 
 function runCovid19() {
@@ -171,6 +187,18 @@ function runCovid19() {
     const selector2 = appendRegionSelector(covid19, regions);
     selector1.property('value', 'France');
     selector2.property('value', 'Italy');
+
+    // Date selectors
+    const dateSelector = covid19.append("div").classed("date-selector", true);
+    dateSelector.append("label").text("From: ");
+    dateFrom = appendDatePicker(dateSelector).classed("from", true);
+    dateSelector.append("br").classed("break-at-small-sizes", true);
+    dateSelector.append("label").text("To: ");
+    dateTo = appendDatePicker(dateSelector).classed("to", true);
+    const t2 = new Date();
+    const t1 = new Date(); t1.setDate(t1.getDate() - 30);
+    dateFrom.property('value', t1.toISOString().split('T')[0]);
+    dateTo.property('value', t2.toISOString().split('T')[0]);
 
     // SVG
     const svg = d3.select("div#covid19").append("svg")
