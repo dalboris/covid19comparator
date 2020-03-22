@@ -15,7 +15,7 @@ function getAllRegions() {
 //
 function getSelectedRegions() {
     const regions = [];
-    d3.selectAll(".region-selector").each(function (d) {
+    d3.selectAll(".region-select").each(function (d) {
         const region = d3.select(this).property('value');
         regions.push(region);
     });
@@ -41,9 +41,12 @@ function getSelectedRegions() {
 function getData(category, regions) {
     const dateParser = d3.timeParse("%Y-%m-%d");
     const data = [];
-    let id = 0;
-    for (const region in covid19Data_) {
-        if (regions.indexOf(region) != -1 && covid19Data_.hasOwnProperty(region)) {
+    let regionId = -1;
+    const alreadyAddedRegions = [];
+    regions.forEach(function (region) {
+        regionId++;
+        if (alreadyAddedRegions.indexOf(region) == -1) {
+            alreadyAddedRegions.push(region);
             const values_ = covid19Data_[region][category];
             const values = [];
             for (const date in values_) {
@@ -55,12 +58,12 @@ function getData(category, regions) {
                 }
             }
             data.push({
-                id: id++,
+                id: regionId,
                 region: region,
                 values: values
             });
         }
-    }
+    });
     return data;
 }
 
@@ -69,9 +72,18 @@ function getData(category, regions) {
 // selection, the updateCovid19() function is called.
 //
 function appendRegionSelector(parent, regions) {
-    const selector = parent.append("select");
+    const regionId = parent.selectAll(".region-selector").size();
+    const tr = parent.append("table").append("tr").classed("region-selector", true);
+    tr.append("td").append("svg").classed("region-color", true)
+        .attr("viewBox", "0 0 40 20")
+        .append("line")
+            .classed("line-" + regionId, true)
+            .attr("x1", 0)
+            .attr("y1", 10)
+            .attr("x2", 40)
+            .attr("y2", 10);
+    const selector = tr.append("td").append("select").classed("region-select", true);
     selector
-        .attr("class", "region-selector")
         .on("change", updateCovid19)
         .selectAll("option")
         .data(regions)
@@ -94,7 +106,7 @@ function updateCovid19() {
     const margin = 5;
     const padding = 5;
     const adj = 50;
-    const svg = d3.select("div#covid19 svg")
+    const svg = d3.select("div#covid19 svg.graph")
         .attr("viewBox", "-"
               + adj + " -"
               + adj + " "
