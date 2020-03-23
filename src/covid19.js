@@ -13,9 +13,9 @@ function getAllRegions() {
 
 // Get a list of selected regions. Example: [ "France", "Italy" ]
 //
-function getSelectedRegions() {
+function getSelectedRegions(covid19) {
     const regions = [];
-    d3.selectAll(".region-select").each(function (d) {
+    covid19.selectAll(".region-select").each(function (d) {
         const region = d3.select(this).property('value');
         regions.push(region);
     });
@@ -112,11 +112,13 @@ function appendCategorySelector(parent) {
         .on("change", updateCovid19);
 }
 
-function updateLines(category, xScale, yScale, dateFrom, dateTo, data) {
-    const covid19 = d3.select("#covid19");
-    const checkbox = covid19.select("." + category + "-checkbox");
+function hasCategory(covid19, category) {
+    return covid19.select("." + category + "-checkbox").property("checked");
+}
+
+function updateLines(covid19, category, xScale, yScale, dateFrom, dateTo, data) {
     const lineGroup = covid19.select("." + category + "-lines");
-    if (checkbox.property("checked")) {
+    if (hasCategory(covid19, category)) {
         lineGroup.style("visibility", "visible");
 
         const line = d3.line()
@@ -144,8 +146,10 @@ function updateLines(category, xScale, yScale, dateFrom, dateTo, data) {
 
 function updateCovid19() {
 
+    const covid19 = d3.select("div#covid19");
+
     // Data
-    const regions = getSelectedRegions();
+    const regions = getSelectedRegions(covid19);
     const dailyCasesData = getData("new_cases", regions);
     const dailyDeathsData = getData("new_deaths", regions);
 
@@ -153,8 +157,8 @@ function updateCovid19() {
 
     // Dates
     const dateParser = d3.timeParse("%Y-%m-%d");
-    dateFrom = dateParser(d3.select("#covid19 .date-selector .from").property("value"));
-    dateTo = dateParser(d3.select("#covid19 .date-selector .to").property("value"));
+    dateFrom = dateParser(covid19.select(".date-selector .from").property("value"));
+    dateTo = dateParser(covid19.select(".date-selector .to").property("value"));
     const dateFilter = function (d) {
             return dateFrom <= d.date && d.date <= dateTo;
     }
@@ -213,14 +217,13 @@ function updateCovid19() {
         .call(yaxis);
 
     // Lines
-    updateLines("daily-cases", xScale, yScale, dateFrom, dateTo, dailyCasesData);
-    updateLines("daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
+    updateLines(covid19, "daily-cases", xScale, yScale, dateFrom, dateTo, dailyCasesData);
+    updateLines(covid19, "daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
 }
 
 function runCovid19() {
 
-    // App main container
-    const covid19 = d3.select("div#covid19");
+    const covid19 = d3.select("#covid19");
 
     // Region selectors
     const regions = getAllRegions();
@@ -250,7 +253,7 @@ function runCovid19() {
     categorySelector.append("label").text(" Daily Deaths");
 
     // SVG
-    const svg = d3.select("div#covid19").append("svg")
+    const svg = covid19.append("svg")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .classed("graph", true);
 
