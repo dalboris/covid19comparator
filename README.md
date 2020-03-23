@@ -2,29 +2,23 @@
 
 A website to compare cases and/or deaths of covid19 between countries
 
-# Prerequisites
+The data is copyright 2020 Johns Hopkins University, all rights reserved, and
+is provided to the public strictly for educational and academic research
+purposes. See:
 
-Ubuntu 18.04.
+https://github.com/CSSEGISandData/COVID-19
 
-```
-sudo apt install unoconv # xls to csv conversion
-```
+The source code of the website itself is licensed under the MIT license.
 
 # How to update data?
 
-Assuming we are on 2020-03-16, first make sure that the ECDC data for this day is available at:
-
-https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
-
-Then, run the following:
-
 ```
-./scrape_data.sh 2020-03-16
+./scrape_data.sh
 ./jsonify_data.py
 ```
 
-This populates the `data` folder with a new `csv` file and a `data.json` file
-which will be automatically embedded within the final `covid19.js`.
+This populates the `data` folder with updated `csv` and `json` files, which
+will be automatically embedded within the final `covid19.js`.
 
 # How to generate the website?
 

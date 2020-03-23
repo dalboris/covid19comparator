@@ -1,35 +1,41 @@
 #!/usr/bin/python3
 #
 
+import csv
 import datetime
 import json
 from pathlib import Path
 
-data_dir = Path("data")
-ecdc_files = [x for x in data_dir.iterdir() if str(x.name).startswith("ecdc")]
-ecdc_files.sort()
-ecdc_csv = ecdc_files[-1].read_text()
+def isUSCity(region, subregion):
+    return ("," in subregion) and subregion != "Washington, D.C."
 
-data = {}
-for line in ecdc_csv.splitlines()[1:]:
-    row = line.split(',')
-    date = datetime.datetime.strptime(row[0], '%m/%d/%Y').date().isoformat()
-    region = row[6]
-    new_cases = row[4]
-    new_deaths = row[5]
-    # some rows have missing data, we assume zero
-    if new_cases == "":
-        new_cases = 0
-    if new_deaths == "":
-        new_deaths = 0
-    if not region in data:
-        init_region_data = {
-            "new_cases": {},
-            "new_deaths": {}
-        }
-        data[region] = init_region_data
-    data[region]["new_cases"][date] = int(new_cases)
-    data[region]["new_deaths"][date] = int(new_deaths)
+def addCategory(filename, category, data):
 
-json_file = data_dir / "data.json"
-json_file.write_text(json.dumps(data, ensure_ascii=False))
+    with open(filename, newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            region = row["Country/Region"]
+            subregion = row["Province/State"]
+            if region == "US":
+                region = "United States"
+                if isUSCity(subregion):
+                    continue
+            if subregion != "":
+                region += " (" + subregion + ")"
+            if not region in data:
+                data[region] = {}
+            data[region][category] = {}
+            for key, value in row.items():
+                if len(key.split("/")) == 3:
+                    isodate = datetime.datetime.strptime(key, '%m/%d/%y').date().isoformat()
+                    data[region][category][isodate] = int(value)
+
+if __name__ == "__main__":
+    data_dir = Path("data")
+    cases_file = data_dir / "time_series_19-covid-Confirmed.csv"
+    deaths_file = data_dir / "time_series_19-covid-Deaths.csv"
+    data = {}
+    addCategory(str(cases_file), "total_cases", data)
+    addCategory(str(deaths_file), "total_deaths", data)
+    json_file = data_dir / "data.json"
+    json_file.write_text(json.dumps(data, ensure_ascii=False))
