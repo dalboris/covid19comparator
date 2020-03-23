@@ -47,16 +47,13 @@ function getData(category, regions) {
         regionId++;
         if (alreadyAddedRegions.indexOf(region) == -1) {
             alreadyAddedRegions.push(region);
-            const values_ = covid19Data_[region][category];
             const values = [];
-            for (const date in values_) {
-                if (values_.hasOwnProperty(date)) {
-                    values.push({
-                        date: dateParser(date),
-                        value: values_[date]
-                    });
-                }
-            }
+            covid19Data_[region].forEach(function (d) {
+                values.push({
+                    date: d.date,
+                    value: d[category]
+                });
+            });
             data.push({
                 id: regionId,
                 region: region,
@@ -221,7 +218,98 @@ function updateCovid19() {
     updateLines(covid19, "daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
 }
 
+// Convert data from:
+//
+// {
+//   "France": {
+//     "new_cases": {"2020-03-21": 1617, "2020-03-20": 1861},
+//     "new_deaths": {...}
+//   },
+//   "Italy": {
+//     "new_cases": {"2020-03-21": 5986, "2020-03-20": 5322},
+//     "new_deaths": {...}
+//   }
+// }
+//
+// To:
+//
+// {
+//   "France": [ { "date": <2020-03-20>, "new_cases": 1861, "new_deaths": ..., "total_cases": ..., "total_deaths": ... },
+//               { "date": <2020-03-21>, "new_cases": 1617, "new_deaths": ..., "total_cases": ..., "total_deaths": ... } ],
+//   "Italy":  [ { "date": <2020-03-20>, "new_cases": 5322, "new_deaths": ..., "total_cases": ..., "total_deaths": ... },
+//               { "date": <2020-03-21>, "new_cases": 5986, "new_deaths": ..., "total_cases": ..., "total_deaths": ... } ]
+// }
+//
+function prepareData() {
+    const categories = ["new_deaths", "new_cases"];
+
+    // Find min and max dates
+    const dateParser = d3.timeParse("%Y-%m-%d");
+    let minDate = new Date(2099, 1, 1);
+    let maxDate = new Date(2019, 1, 1);
+    for (const region in covid19Data_) {
+        if (covid19Data_.hasOwnProperty(region)) {
+            categories.forEach(function (category) {
+                const values_ = covid19Data_[region][category];
+                for (const dateString in values_) {
+                    if (values_.hasOwnProperty(dateString)) {
+                        const date = dateParser(dateString);
+                        if (date < minDate) {
+                            minDate = date;
+                        }
+                        if (date > maxDate) {
+                            maxDate = date;
+                        }
+                    }
+                }
+            });
+        }
+    }
+    let dateRange = [];
+    for (var d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) {
+        dateRange.push(new Date(d));
+    }
+
+    // Fill in blank data and compute totals from dailies
+    for (const region in covid19Data_) {
+        if (covid19Data_.hasOwnProperty(region)) {
+            const regionData = [];
+            let totalCases = 0;
+            let totalDeaths = 0;
+            dateRange.forEach(function (date) {
+                const dateString = toISODateString(date);
+                let dailyCases = 0;
+                let dailyDeaths = 0;
+                if (covid19Data_[region]["new_cases"].hasOwnProperty(dateString)) {
+                    dailyCases = covid19Data_[region]["new_cases"][dateString];
+                }
+                if (covid19Data_[region]["new_deaths"].hasOwnProperty(dateString)) {
+                    dailyDeaths = covid19Data_[region]["new_deaths"][dateString];
+                }
+                totalCases += dailyCases;
+                totalDeaths += dailyDeaths;
+                regionData.push({
+                    date: date,
+                    new_cases: dailyCases,
+                    new_deaths: dailyDeaths,
+                    total_cases: totalCases,
+                    total_deaths: totalDeaths
+                });
+            });
+            covid19Data_[region] = regionData;
+        }
+    }
+}
+
+// Convert from datetime object to yyyy-mm-dd
+//
+function toISODateString(date) {
+    return date.toISOString().split('T')[0];
+}
+
 function runCovid19() {
+
+    prepareData();
 
     const covid19 = d3.select("#covid19");
 
@@ -242,8 +330,8 @@ function runCovid19() {
     dateTo = appendDateSelector(dateSelector).classed("to", true);
     const t2 = new Date();
     const t1 = new Date(); t1.setDate(t1.getDate() - 30);
-    dateFrom.property('value', t1.toISOString().split('T')[0]);
-    dateTo.property('value', t2.toISOString().split('T')[0]);
+    dateFrom.property('value', toISODateString(t1));
+    dateTo.property('value', toISODateString(t2));
 
     // Category selector
     const categorySelector = covid19.append("div").classed("category-selector", true).classed("margined", true);
