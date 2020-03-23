@@ -141,6 +141,18 @@ function updateLines(covid19, category, xScale, yScale, dateFrom, dateTo, data) 
     }
 }
 
+function maxValue(dateFilter, data) {
+    let res = 0;
+    data.forEach(function (d) { // For each country
+        d.values.forEach(function (d) { // For each date
+            if (dateFilter(d) && d.value > res) {
+                res = d.value;
+            }
+        });
+    });
+    return res;
+}
+
 function updateCovid19() {
 
     const covid19 = d3.select("div#covid19");
@@ -149,6 +161,8 @@ function updateCovid19() {
     const regions = getSelectedRegions(covid19);
     const dailyCasesData = getData("new_cases", regions);
     const dailyDeathsData = getData("new_deaths", regions);
+    const totalCasesData = getData("total_cases", regions);
+    const totalDeathsData = getData("total_deaths", regions);
 
     // TODO: compute cumulated data.
 
@@ -161,22 +175,10 @@ function updateCovid19() {
     }
 
     // Compute max daily cases
-    let maxDailyCases = 0;
-    dailyCasesData.forEach(function (d) { // For each country
-        d.values.forEach(function (d) { // For each date
-            if (dateFilter(d) && d.value > maxDailyCases) {
-                maxDailyCases = d.value;
-            }
-        });
-    });
-    let maxDailyDeaths = 0;
-    dailyDeathsData.forEach(function (d) { // For each country
-        d.values.forEach(function (d) { // For each date
-            if (dateFilter(d) && d.value > maxDailyDeaths) {
-                maxDailyDeaths = d.value;
-            }
-        });
-    });
+    let maxDailyCases =  maxValue(dateFilter, dailyCasesData);
+    let maxDailyDeaths = maxValue(dateFilter, dailyDeathsData);
+    let maxTotalCases =  maxValue(dateFilter, totalCasesData);
+    let maxTotalDeaths = maxValue(dateFilter, totalDeathsData);
 
     // SVG Element
     const width = 960;
@@ -197,12 +199,20 @@ function updateCovid19() {
     const xScale = d3.scaleTime().range([0, width]);
     const yScale = d3.scaleLinear().rangeRound([height, 0]);
     xScale.domain([dateFrom, dateTo]);
+    let yMax = 0;
     if (hasCategory(covid19, "daily-cases")) {
-        yScale.domain([0, maxDailyCases]);
+        yMax = Math.max(yMax, maxDailyCases);
     }
-    else {
-        yScale.domain([0, maxDailyDeaths]);
+    if (hasCategory(covid19, "daily-deaths")) {
+        yMax = Math.max(yMax, maxDailyDeaths);
     }
+    if (hasCategory(covid19, "total-cases")) {
+        yMax = Math.max(yMax, maxTotalCases);
+    }
+    if (hasCategory(covid19, "total-deaths")) {
+        yMax = Math.max(yMax, maxTotalDeaths);
+    }
+    yScale.domain([0, yMax]);
 
     // Axes
     const yaxis = d3.axisLeft()
@@ -229,6 +239,8 @@ function updateCovid19() {
     // Lines
     updateLines(covid19, "daily-cases", xScale, yScale, dateFrom, dateTo, dailyCasesData);
     updateLines(covid19, "daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
+    updateLines(covid19, "total-cases", xScale, yScale, dateFrom, dateTo, totalCasesData);
+    updateLines(covid19, "total-deaths", xScale, yScale, dateFrom, dateTo, totalDeathsData);
 }
 
 // Convert data from:
@@ -362,12 +374,18 @@ function runCovid19() {
     dateFrom.property('value', toISODateString(aMonthAgo));
     dateTo.property('value', toISODateString(today));
 
-    // Category selector
-    const categorySelector = covid19.append("div").classed("category-selector", true).classed("margined", true);
-    appendCategorySelector(categorySelector).classed("daily-cases-checkbox", true).property("checked", true);
-    categorySelector.append("label").text(" Daily Cases");
-    appendCategorySelector(categorySelector).classed("daily-deaths-checkbox", true).property("checked", true);
-    categorySelector.append("label").text(" Daily Deaths");
+    // Category selectors
+    const categorySelector1 = covid19.append("div").classed("category-selector", true).classed("margined", true);
+    appendCategorySelector(categorySelector1).classed("daily-cases-checkbox", true).property("checked", false);
+    categorySelector1.append("label").text(" Daily Cases");
+    appendCategorySelector(categorySelector1).classed("daily-deaths-checkbox", true).property("checked", false);
+    categorySelector1.append("label").text(" Daily Deaths");
+
+    const categorySelector2 = covid19.append("div").classed("category-selector", true).classed("margined", true);
+    appendCategorySelector(categorySelector2).classed("total-cases-checkbox", true).property("checked", false);
+    categorySelector2.append("label").text(" Total Cases");
+    appendCategorySelector(categorySelector2).classed("total-deaths-checkbox", true).property("checked", true);
+    categorySelector2.append("label").text(" Total Deaths");
 
     // SVG
     const svg = covid19.append("svg")
@@ -381,6 +399,8 @@ function runCovid19() {
     // Lines
     svg.append("g").attr("class", "daily-cases-lines");
     svg.append("g").attr("class", "daily-deaths-lines");
+    svg.append("g").attr("class", "total-cases-lines");
+    svg.append("g").attr("class", "total-deaths-lines");
 
     updateCovid19();
 }

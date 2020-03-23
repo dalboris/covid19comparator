@@ -198,7 +198,21 @@ br.break-at-small-sizes {
 }
 
 .daily-cases-lines .line {
-    stroke-dasharray: 5 2;
+    stroke-dasharray: 2 4;
+    stroke-width: 2px;
+}
+
+.daily-deaths-lines .line {
+    stroke-width: 2px;
+}
+
+.total-cases-lines .line {
+    stroke-dasharray: 4 8;
+    stroke-width: 3px;
+}
+
+.total-deaths-lines .line {
+    stroke-width: 3px;
 }
 
 .line-0 { stroke: #ff4343; }
