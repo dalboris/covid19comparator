@@ -2,7 +2,7 @@
 
 A website to compare cases and/or deaths of covid19 between countries. This
 website is non-commercial and purely for educational and academic research
-purposes.
+purposes. The data comes from the following sources:
 
 - https://github.com/CSSEGISandData/COVID-19
 

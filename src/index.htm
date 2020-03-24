@@ -16,20 +16,25 @@
 
       <h1>COVID-19 Comparator</h1>
 
-      <p class="author">By Boris Dalstein. Published March 20, 2020.</p>
+      <p class="author">By Boris Dalstein. Published March 24, 2020.</p>
+
+      <p class="author">Source code: <a href="https://github.com/dalboris/covid19comparator" target="_blank">github.com/dalboris/covid19comparator</a></p>
 
       <p>The province of Hubei in China waited 40 deaths before entering
       lockdown, for a final death toll of 3,000. Without the lockdown,  it
-      would have been 120,000 deaths assuming an optimistic scenario of 40%
-      population infected and 0.5% infection fatality risk. So we know that
-      lockdowns work, but acting early is critical. For example, Italy waited
-      600 deaths before entering lockdown, which is very late.</p>
+      would have been 120,000 deaths assuming 40% of the population infected
+      and an infection fatality risk of 0.5%. So we know that lockdowns work,
+      but acting early is critical. For example, Italy waited 600 deaths, and
+      is on a trajectory to have more than 10,000 deaths (6,820 as of March
+      24).</p>
 
       <p>Indeed, at the early stage of any epidemic, the death toll grows
       exponentially, which means that each day, the death toll is increased by
-      a fixed percentage, called the <b>growth rate</b>. In the case of
-      COVID-19, this growth rate is typically around 30%. Let's take the
-      United States as an example:</p>
+      an (almost) fixed percentage, called the <b>growth rate</b>. In the case
+      of COVID-19, this growth rate is typically around 30%, which means that
+      the death toll doubles every three days. Let's take the United States as
+      an example, see how every three days, the death toll more than
+      doubles:</p>
 
       <table class="table-growth">
         <tr class="tr-head">
@@ -73,6 +78,36 @@
           <td class="td-growthrate">+38%</td>
           <td class="td-growthcalc">(150 &times; 1.38 = 207)</td>
         </tr>
+        <tr>
+          <td class="td-date">March 20</td>
+          <td class="td-totaldeaths">256</td>
+          <td class="td-growthrate">+24%</td>
+          <td class="td-growthcalc">(207 &times; 1.24 = 256)</td>
+        </tr>
+        <tr>
+          <td class="td-date">March 21</td>
+          <td class="td-totaldeaths">302</td>
+          <td class="td-growthrate">+18%</td>
+          <td class="td-growthcalc">(256 &times; 1.18 = 302)</td>
+        </tr>
+        <tr>
+          <td class="td-date">March 22</td>
+          <td class="td-totaldeaths">413</td>
+          <td class="td-growthrate">+37%</td>
+          <td class="td-growthcalc">(302 &times; 1.37 = 413)</td>
+        </tr>
+        <tr>
+          <td class="td-date">March 23</td>
+          <td class="td-totaldeaths">553</td>
+          <td class="td-growthrate">+34%</td>
+          <td class="td-growthcalc">(413 &times; 1.34 = 553)</td>
+        </tr>
+        <tr>
+          <td class="td-date"></td>
+          <td class="td-totaldeaths"></td>
+          <td class="td-growthrate">(avg.: 28.7%)</td>
+          <td class="td-growthcalc">(57 &times; 1.287^9 = 553)</td>
+        </tr>
       </table>
 
       <p class="table-legend">
@@ -80,39 +115,39 @@
       </p>
 
       <p>Obviously the growth can't be exponential <i>forever</i>. It stops
-      either once most of the population is infected (= 120,000 deaths), or
-      once we succeed in stopping the propagation (= 3,000 deaths).
-      Unfortunately, even when a country/region enters lockdown early on, this
+      either once most of the population is infected (e.g., 100,000 deaths),
+      or once the country succeeds in stopping the propagation (e.g., 5,000
+      deaths). Unfortunately, even when a country enters lockdown early, this
       exponential growth doesn't stop before <i>at least</i> 14 days after
       lockdown, which corresponds to the <a
       href="https://www.worldometers.info/coronavirus/coronavirus-death-rate/#days"
       target="_blank">median time from first symptom to death</a>. Indeed,
       most deaths in this 14-day period after lockdown are from people that
-      were already contaminated before the lockdown. So if the US entered
-      countrywide lockdown on March 19, the death toll would have been at
+      were already contaminated before the lockdown. So if a country currently
+      has 100 deaths and enters lockdown today, the death toll will be at
       least:</p>
 
-      <p style="text-align: center">207 &times; 1.3 &times; 1.3 &times; ... (14 times) = <b>8,150 deaths</b></p>
+      <p style="text-align: center">100 &times; 1.3 &times; 1.3 &times; ... (14 times) = <b>3,937 deaths</b></p>
 
-      <p>But they didn't. If they wait 7 more days, the death toll will be at least:</p>
+      <p>But if they wait 7 more days, the death toll will be at least:</p>
 
-      <p style="text-align: center">207 &times; 1.3 &times; 1.3 &times; ... (21 times) = <b>51,142 deaths</b></p>
+      <p style="text-align: center">207 &times; 1.3 &times; 1.3 &times; ... (21 times) = <b>24,706 deaths</b></p>
 
-      <p>Every day counts. Countries which are suffering widespread infections
-      must enter lockdown as soon as possible. If your government doesn't
-      order a lockdown, please self-quarantine, to take matters into your own
-      hands. Stay home, to save the lives of tens of thousands of people, if
-      not millions.</p>
+      <p>This is why every day counts. Countries which are suffering
+      widespread infections must enter lockdown as soon as possible. If your
+      government doesn't order a lockdown, please self-quarantine, to take
+      matters into your own hands. Stay home, to save the lives of tens of
+      thousands of people, if not hundreds of thousands or more.</p>
 
       <p>Below, you can compare the number of deaths in different countries.
       This comparator allows you to see for yourself how scary exponential
       growth is. This comparator allows you to understand why it is so
-      important to enter lockdown TODAY. Remember, the death toll will keep
-      growing exponentially for 14 days after lockdown, which is why you
-      really need to start staying home right now, even if the number of
-      deaths in your country doesn't look scary yet. Exponential growth is
-      deceptive: it looks slow at the beginning, but then in a matter of days
-      you get thousands of deaths.</p>
+      important to enter lockdown as soon as possible. Remember, the death
+      toll will keep growing exponentially for 14 days after lockdown, which
+      is why if you are not doing it already, you should start staying home
+      now, even if the number of deaths in your country doesn't look scary
+      yet. Exponential growth is deceptive: it looks slow at the beginning,
+      but then in a matter of days you get thousands of deaths.</p>
 
       <div id="covid19"></div>
 
@@ -187,7 +222,8 @@
       currently doing it around the world (either self-imposed or imposed by
       our governments), and really, sitting in our couches watching TV alone
       or with our household for one month is a small price to pay to stop the
-      pandemic, and potentially save the lives of millions of people.</p>
+      pandemic, and potentially save the lives of hundreds of thousands of
+      people.</p>
 
     </div>
 
