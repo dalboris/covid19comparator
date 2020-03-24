@@ -1,16 +1,31 @@
 # covid19comparator
 
-A website to compare cases and/or deaths of covid19 between countries
+A website to compare cases and/or deaths of covid19 between countries. This
+website is non-commercial and purely for educational and academic research
+purposes.
 
-The data is copyright 2020 Johns Hopkins University, all rights reserved, and
-is provided to the public strictly for educational and academic research
-purposes. See:
+- https://github.com/CSSEGISandData/COVID-19
 
-https://github.com/CSSEGISandData/COVID-19
+  Copyright 2020 Johns Hopkins University
 
-The source code of the website itself is licensed under the MIT license.
+- https://www.worldometers.info/coronavirus/
+
+  Copyright 2020 Worldometers.info
+
+Thank you so much for the effort of compiling this data and making it
+available. If you are a copyright holder and believe that I am infringing any
+rights, please let me know at (dalboris gmail com).
 
 # How to update data?
+
+You need Python3 and BeautifulSoup 4:
+
+```
+pip3 install lxml
+pip3 install beautifulsoup4
+```
+
+Then:
 
 ```
 ./scrape_data.sh
