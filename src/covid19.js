@@ -164,7 +164,35 @@ function updateCovid19() {
     const totalCasesData = getData("total_cases", regions);
     const totalDeathsData = getData("total_deaths", regions);
 
-    // TODO: compute cumulated data.
+    // Sync
+    const syncNum = covid19.select(".sync-selector input").property("value");
+    const syncDateFounds = [];
+    const syncDates = [];
+    for (let j = 0; j < regions.length; ++j) {
+        let syncDate = getToday();
+        let syncDateFound = false;
+        totalDeathsData[j].values.forEach(function (d) {
+            if (!syncDateFound && d.value > syncNum) {
+                syncDateFound = true;
+                syncDate = d.date;
+            }
+        });
+        syncDateFounds.push(syncDateFound);
+        syncDates.push(syncDate);
+    }
+    if (syncDateFounds[0]) {
+        const allData = [dailyCasesData, dailyDeathsData, totalCasesData, totalDeathsData];
+        for (let j = 1; j < regions.length; ++j) {
+            if (syncDateFounds[j]) {
+                numDaysDiff = computeDaysDiff(syncDates[j], syncDates[0]);
+                for (let i = 1; i < allData.length; ++i) {
+                    allData[i][j].values.forEach(function (d) {
+                        d.date = applyDaysDiff(d.date, numDaysDiff);
+                    });
+                }
+            }
+        }
+    }
 
     // Dates
     const dateParser = fromISODateString;
@@ -342,10 +370,19 @@ function getToday() {
     return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 }
 
-function getDateOffset(date, offset) {
+// Returns a new date by offsetting the given date by numDays.
+function applyDaysDiff(date, numDays) {
     const res = new Date(date);
-    res.setDate(res.getDate() + offset);
+    res.setDate(res.getDate() + numDays);
     return res;
+}
+
+// Computes number of day from d1 to d2. Positive is d2 is after d1, negative otherwise
+const ms_per_day_ = 1000 * 60 * 60 * 24;
+function computeDaysDiff(d1, d2) {
+  const utc1 = Date.UTC(d1.getFullYear(), d1.getMonth(), d1.getDate());
+  const utc2 = Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate());
+  return Math.floor((utc2 - utc1) / ms_per_day_);
 }
 
 function runCovid19() {
@@ -362,6 +399,17 @@ function runCovid19() {
     selector1.property('value', 'France (France)');
     selector2.property('value', 'Italy');
 
+    // Sync selector
+    const syncSelector = covid19.append("div").classed("sync-selector", true).classed("margined", true);
+    syncSelector.append("label").text("Sync at: ");
+    syncSelector
+        .append("input")
+        .attr("type", "number")
+        .attr("min", "0")
+        .property("value", "10")
+        .on("change", updateCovid19);
+    syncSelector.append("p").text("th death");
+
     // Date selectors
     const dateSelector = covid19.append("div").classed("date-selector", true).classed("margined", true);
     dateSelector.append("label").text("From: ");
@@ -370,9 +418,10 @@ function runCovid19() {
     dateSelector.append("label").text("To: ");
     dateTo = appendDateSelector(dateSelector).classed("to", true);
     const today = getToday();
-    const aMonthAgo = getDateOffset(today, -30);
-    dateFrom.property('value', toISODateString(aMonthAgo));
-    dateTo.property('value', toISODateString(today));
+    const t1 = applyDaysDiff(today, -20);
+    const t2 = applyDaysDiff(today, 10);
+    dateFrom.property('value', toISODateString(t1));
+    dateTo.property('value', toISODateString(t2));
 
     // Category selectors
     const categorySelector1 = covid19.append("div").classed("category-selector", true).classed("margined", true);

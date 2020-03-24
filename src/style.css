@@ -150,6 +150,20 @@ br.break-at-small-sizes {
     height: 25px;
 }
 
+.sync-selector label, .sync-selector input, .sync-selector p {
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.sync-selector label {
+    margin-right: 20px;
+}
+
+.sync-selector input {
+    width: 60px;
+}
+
 .date-selector {
 
 }
