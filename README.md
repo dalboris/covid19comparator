@@ -60,5 +60,5 @@ Finally, run:
 ./deploy_production.sh
 ```
 
-This writes the static website to a subfolder named `covid19generator` of the
+This writes the static website to a subfolder named `covid19generator.com` of the
 host. You may want to modify `deploy_production.sh` to fit your environment.
