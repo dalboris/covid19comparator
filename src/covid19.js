@@ -326,28 +326,38 @@ function prepareData() {
     // Fill in blank data and compute totals from dailies
     for (const region in covid19Data_) {
         if (covid19Data_.hasOwnProperty(region)) {
+            let lastAvailableDate = dateRange[0];
+            dateRange.forEach(function (date) {
+                const dateString = toISODateString(date);
+                if (covid19Data_[region]["total_cases"].hasOwnProperty(dateString) &&
+                    covid19Data_[region]["total_deaths"].hasOwnProperty(dateString)) {
+                    lastAvailableDate = date;
+                }
+            });
             const regionData = [];
             let previousTotalCases = 0;
             let previousTotalDeaths = 0;
             dateRange.forEach(function (date) {
                 const dateString = toISODateString(date);
-                let totalCases = 0;
-                let totalDeaths = 0;
-                if (covid19Data_[region]["total_cases"].hasOwnProperty(dateString)) {
-                    totalCases = covid19Data_[region]["total_cases"][dateString];
+                let totalCases = previousTotalCases;
+                let totalDeaths = previousTotalDeaths;
+                if (date <= lastAvailableDate) {
+                    if (covid19Data_[region]["total_cases"].hasOwnProperty(dateString)) {
+                        totalCases = covid19Data_[region]["total_cases"][dateString];
+                    }
+                    if (covid19Data_[region]["total_deaths"].hasOwnProperty(dateString)) {
+                        totalDeaths = covid19Data_[region]["total_deaths"][dateString];
+                    }
+                    regionData.push({
+                        date: date,
+                        new_cases: totalCases - previousTotalCases,
+                        new_deaths: totalDeaths - previousTotalDeaths,
+                        total_cases: totalCases,
+                        total_deaths: totalDeaths
+                    });
+                    previousTotalCases = totalCases;
+                    previousTotalDeaths = totalDeaths;
                 }
-                if (covid19Data_[region]["total_deaths"].hasOwnProperty(dateString)) {
-                    totalDeaths = covid19Data_[region]["total_deaths"][dateString];
-                }
-                regionData.push({
-                    date: date,
-                    new_cases: totalCases - previousTotalCases,
-                    new_deaths: totalDeaths - previousTotalDeaths,
-                    total_cases: totalCases,
-                    total_deaths: totalDeaths
-                });
-                previousTotalCases = totalCases;
-                previousTotalDeaths = totalDeaths;
             });
             covid19Data_[region] = regionData;
         }

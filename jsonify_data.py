@@ -6,7 +6,7 @@ import datetime
 import json
 from pathlib import Path
 
-def isUSCity(region, subregion):
+def isUSCity(subregion):
     return ("," in subregion) and subregion != "Washington, D.C."
 
 def addCategory(filename, category, data):
@@ -26,7 +26,7 @@ def addCategory(filename, category, data):
                 data[region] = {}
             data[region][category] = {}
             for key, value in row.items():
-                if len(key.split("/")) == 3:
+                if len(key.split("/")) == 3 and value != "":
                     isodate = datetime.datetime.strptime(key, '%m/%d/%y').date().isoformat()
                     data[region][category][isodate] = int(value)
 
