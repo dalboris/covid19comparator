@@ -20,6 +20,7 @@ out_dir.mkdir()
 shutil.copy(str(src_dir / ".htaccess"), str(out_dir))
 shutil.copy(str(src_dir / "style.css"), str(out_dir))
 shutil.copy(str(src_dir / "index.htm"), str(out_dir))
+shutil.copy(str(src_dir / "ogimage.jpg"), str(out_dir))
 
 # Copy covid19.js while replacing test data with real data
 data = (data_dir / "data.json").read_text()
