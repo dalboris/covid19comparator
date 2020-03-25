@@ -227,17 +227,20 @@ function updateCovid19() {
     let maxTotalDeaths = maxValue(dateFilter, totalDeathsData);
 
     // SVG Element
-    const width = 960;
-    const height = 500;
-    const margin = 5;
-    const padding = 5;
-    const adj = 50;
+    const totalWidth = covid19.node().getBoundingClientRect().width;
+    const marginLeft = 50;
+    const marginRight = 50;
+    const marginTop = 30;
+    const marginBottom = 100;
+    const width = totalWidth - marginLeft - marginRight;
+    const height = 600;
+    const totalHeight = height + marginTop + marginBottom;
     const svg = covid19.select("svg.graph")
         .attr("viewBox", "-"
-              + adj + " -"
-              + adj + " "
-              + (width + adj*3) + " "
-              + (height + adj*3));
+              + marginLeft + " -"
+              + marginTop + " "
+              + totalWidth + " "
+              + totalHeight);
 
     // Scales
     const xScale = d3.scaleTime().range([0, width]);
@@ -270,7 +273,7 @@ function updateCovid19() {
         .attr("y2", height - 0.5);
 
     // X Axis dates
-    const dateDy = 50;
+    const dateDy = 40;
     for (let j = 0; j < regions.length; ++j) {
         const xScale_ = d3.scaleTime().range([0, width]);
         xScale_.domain([
