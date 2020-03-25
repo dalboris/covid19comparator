@@ -37,6 +37,13 @@ p.table-legend {
     font-size: 11px;
 }
 
+p.note {
+    border-left: 2px solid #d6d87b;
+    padding-left: 10px;
+    color: #222;
+    font-size: 14px;
+}
+
 h1, h2, h3         { font-size: 36px; }
 label              { font-size: 18px; }
 p, li, .tr-head td { font-size: 16px; }
@@ -65,7 +72,7 @@ tr {
     h1, h2, h3         { font-size: 24px; }
     label              { font-size: 14px; }
     p, li, .tr-head td { font-size: 12px; }
-    td                 { font-size: 11px; }
+    td, p.note         { font-size: 11px; }
 
     h1, h2, h3, p, li, label, .margined { margin-left: 10px; margin-right: 10px; }
     table.table-growth                  { width: calc(100% - 20px) }
