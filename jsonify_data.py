@@ -19,7 +19,7 @@ def populateCategoryFromJohnHopkins(filename, category, data):
                 region = "South Korea"
             if region == "US":
                 region = "United States"
-                if "," in subregion: # U.S City: discard
+                if "," in subregion or subregion == "US": # US City or "US": discard
                     continue
             if subregion != "":
                 region += " (" + subregion + ")"
@@ -61,8 +61,10 @@ def populateCategoryFromWorldometers(text, seriesName, region, category, latest,
     assert len(dates) == len(values)
 
     # Insert latest data. We do this because the total indicated on top of the
-    # page in Worldometers are sometimes more up to date than the charts.
-    if latest != values[-1]:
+    # page in Worldometers are sometimes more up to date than the charts. The
+    # United States is sometimes only partially updated for the current day,
+    # and may give a false impression of "slowing down", so we skip.
+    if region != "United States" and latest != values[-1]:
         values.append(latest)
         date = dates[-1]
         date += datetime.timedelta(days=1)
@@ -86,7 +88,7 @@ def populateRegionFromWorldometers(regionurl, region, data):
     response = urllib.request.urlopen(url)
     response_bytes = response.read()
     text = response_bytes.decode('utf-8')
-    print(" OK " + url + "...")
+    print(" OK")
 
     soup = BeautifulSoup(text, 'lxml')
     latestTotalCases = -1
@@ -136,6 +138,7 @@ def populateDataFromWorldometers(data):
     populateRegionFromWorldometers("sweden", "Sweden", data)
     populateRegionFromWorldometers("switzerland", "Switzerland", data)
     populateRegionFromWorldometers("uk", "United Kingdom", data)
+    populateRegionFromWorldometers("us", "United States", data)
 
 
 if __name__ == "__main__":
