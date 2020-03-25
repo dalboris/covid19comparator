@@ -497,6 +497,7 @@ function runCovid19() {
     svg.append("g").attr("class", "total-deaths-lines");
 
     updateCovid19();
+    window.addEventListener("resize", updateCovid19);
 }
 
 ////START_DATA////
