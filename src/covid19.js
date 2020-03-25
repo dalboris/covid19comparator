@@ -236,8 +236,6 @@ function updateCovid19() {
               + (height + adj*3));
 
     // Scales
-    // For now we scale based on the first region
-    // TODO: scale based all selected regions
     const xScale = d3.scaleTime().range([0, width]);
     const yScale = d3.scaleLinear().rangeRound([height, 0]);
     xScale.domain([dateFrom, dateTo]);
@@ -337,7 +335,7 @@ function prepareData() {
         dateRange.push(new Date(d));
     }
 
-    // Fill in blank data and compute totals from dailies
+    // Fill in blank data and compute dailies from totals
     for (const region in covid19Data_) {
         if (covid19Data_.hasOwnProperty(region)) {
             let lastAvailableDate = dateRange[0];
