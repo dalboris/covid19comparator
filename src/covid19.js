@@ -277,8 +277,8 @@ function updateCovid19() {
     for (let j = 0; j < regions.length; ++j) {
         const xScale_ = d3.scaleTime().range([0, width]);
         xScale_.domain([
-            applyDaysDiff(dateFrom, syncDaysDiffs[j]),
-            applyDaysDiff(dateTo, syncDaysDiffs[j])]);
+            applyDaysDiff(dateFrom, -syncDaysDiffs[j]),
+            applyDaysDiff(dateTo, -syncDaysDiffs[j])]);
 
         const xaxis = d3.axisBottom()
             .ticks(d3.timeDay.every(1))
