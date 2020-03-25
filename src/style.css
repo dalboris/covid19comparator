@@ -12,6 +12,10 @@ div, svg, label, select {
     display: block;
 }
 
+td select {
+    display: table-cell;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
@@ -129,7 +133,7 @@ br.break-at-small-sizes {
 }
 
 .region-selector {
-    display: block;
+
 }
 
 .region-selector td {
@@ -137,7 +141,6 @@ br.break-at-small-sizes {
 }
 
 .region-color {
-    display: inline-block;
     width: 40px;
     height: 20px;
     margin-right: 20px;
@@ -149,8 +152,8 @@ br.break-at-small-sizes {
 }
 
 .region-select {
-    display: inline-block;
     height: 25px;
+    max-width: 230px;
 }
 
 .sync-selector label, .sync-selector input, .sync-selector p {

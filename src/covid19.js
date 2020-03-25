@@ -84,7 +84,7 @@ function getData(category, regions) {
 //
 function appendRegionSelector(parent, regions) {
     const regionId = parent.selectAll(".region-selector").size();
-    const tr = parent.append("table").append("tr").classed("region-selector", true).classed("margined", true);
+    const tr = parent.append("table").classed("margined", true).append("tr").classed("region-selector", true);
     tr.append("td").append("svg").classed("region-color", true)
         .attr("viewBox", "0 0 40 20")
         .append("line")
