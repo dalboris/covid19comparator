@@ -182,6 +182,7 @@ function updateCovid19() {
     const syncNum = covid19.select(".sync-selector input").property("value");
     const syncDateFounds = [];
     const syncDates = [];
+    const syncDaysDiffs = [];
     for (let j = 0; j < regions.length; ++j) {
         let syncDate = getToday();
         let syncDateFound = false;
@@ -194,9 +195,11 @@ function updateCovid19() {
         syncDateFounds.push(syncDateFound);
         syncDates.push(syncDate);
     }
-    if (syncDateFounds[0]) {
-        const allData = [dailyCasesData, dailyDeathsData, totalCasesData, totalDeathsData];
-        for (let j = 1; j < regions.length; ++j) {
+    const allData = [dailyCasesData, dailyDeathsData, totalCasesData, totalDeathsData];
+    syncDaysDiffs.push(0);
+    for (let j = 1; j < regions.length; ++j) {
+        let numDaysDiff = 0;
+        if (syncDateFounds[0]) {
             if (syncDateFounds[j]) {
                 numDaysDiff = computeDaysDiff(syncDates[j], syncDates[0]);
                 for (let i = 1; i < allData.length; ++i) {
@@ -206,6 +209,7 @@ function updateCovid19() {
                 }
             }
         }
+        syncDaysDiffs.push(numDaysDiff);
     }
 
     // Dates
@@ -228,7 +232,7 @@ function updateCovid19() {
     const margin = 5;
     const padding = 5;
     const adj = 50;
-    const svg = d3.select("#covid19 svg.graph")
+    const svg = covid19.select("svg.graph")
         .attr("viewBox", "-"
               + adj + " -"
               + adj + " "
@@ -254,29 +258,42 @@ function updateCovid19() {
     }
     yScale.domain([0, yMax]);
 
-    // Axes
-    const yaxis = d3.axisLeft()
-        .scale(yScale);
+    // Y Axis
+    const yaxis = d3.axisLeft().scale(yScale);
+    svg.select(".y.axis").call(yaxis);
 
-    const xaxis = d3.axisBottom()
-        .ticks(d3.timeDay.every(1))
-        .tickFormat(d3.timeFormat('%b %d'))
-        .scale(xScale);
+    // X Axis horizontal bar
+    svg.select(".x-axis-domain")
+        .attr("x1", 0)
+        .attr("y1", height - 0.5)
+        .attr("x2", width)
+        .attr("y2", height - 0.5);
 
-    svg.select(".x.axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xaxis)
-      .selectAll("text")
-        .attr("y", 0)
-        .attr("x", 9)
-        .attr("dy", ".35em")
-        .attr("transform", "rotate(90)")
-        .style("text-anchor", "start");
+    // X Axis dates
+    const dateDy = 50;
+    for (let j = 0; j < regions.length; ++j) {
+        const xScale_ = d3.scaleTime().range([0, width]);
+        xScale_.domain([
+            applyDaysDiff(dateFrom, syncDaysDiffs[j]),
+            applyDaysDiff(dateTo, syncDaysDiffs[j])]);
 
-    svg.select(".y.axis")
-        .call(yaxis);
+        const xaxis = d3.axisBottom()
+            .ticks(d3.timeDay.every(1))
+            .tickFormat(d3.timeFormat('%b %d'))
+            .scale(xScale_);
 
-    // Lines
+        svg.select(".x.axis-" + j)
+            .attr("transform", "translate(0," + (height + j*dateDy) + ")")
+            .call(xaxis)
+          .selectAll("text")
+            .attr("y", 0)
+            .attr("x", 9)
+            .attr("dy", ".35em")
+            .attr("transform", "rotate(90)")
+            .style("text-anchor", "start");
+    }
+
+    // Plotted curves
     updateLines(covid19, "daily-cases", xScale, yScale, dateFrom, dateTo, dailyCasesData);
     updateLines(covid19, "daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
     updateLines(covid19, "total-cases", xScale, yScale, dateFrom, dateTo, totalCasesData);
@@ -464,7 +481,10 @@ function runCovid19() {
         .classed("graph", true);
 
     // Axes
-    svg.append("g").attr("class", "x axis");
+    const xAxes = svg.append("g").attr("class", "x axes");
+    xAxes.append("line").attr("class", "x-axis-domain");
+    xAxes.append("g").attr("class", "x axis axis-0");
+    xAxes.append("g").attr("class", "x axis axis-1");
     svg.append("g").attr("class", "y axis");
 
     // Lines
