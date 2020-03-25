@@ -233,7 +233,7 @@ function updateCovid19() {
     const marginTop = 30;
     const marginBottom = 100;
     const width = totalWidth - marginLeft - marginRight;
-    const height = 600;
+    const height = width;
     const totalHeight = height + marginTop + marginBottom;
     const svg = covid19.select("svg.graph")
         .attr("viewBox", "-"
