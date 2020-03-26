@@ -114,15 +114,6 @@ function appendDateSelector(parent) {
         .on("change", updateCovid19);
 }
 
-// Append a category selector.
-//
-function appendCategorySelector(parent) {
-    return parent
-        .append("input")
-        .attr("type", "checkbox")
-        .on("change", updateCovid19);
-}
-
 function hasCategory(covid19, category) {
     return covid19.select("." + category + "-checkbox").property("checked");
 }
@@ -435,48 +426,10 @@ function runCovid19() {
 
     // Region selectors
     const regions = getAllRegions();
-    const regionselector = covid19.append("label").text("Countries to compare:");
     const selector1 = appendRegionSelector(covid19, regions);
     const selector2 = appendRegionSelector(covid19, regions);
     selector1.property('value', 'United States');
     selector2.property('value', 'Italy');
-
-    // Sync selector
-    const syncSelector = covid19.append("div").classed("sync-selector", true).classed("margined", true);
-    syncSelector.append("label").text("Sync at: ");
-    syncSelector
-        .append("input")
-        .attr("type", "number")
-        .attr("min", "0")
-        .property("value", "100")
-        .on("change", updateCovid19);
-    syncSelector.append("p").text("th death");
-
-    // Date selectors
-    const dateSelector = covid19.append("div").classed("date-selector", true).classed("margined", true);
-    dateSelector.append("label").text("From: ");
-    dateFrom = appendDateSelector(dateSelector).classed("from", true);
-    dateSelector.append("br").classed("break-at-small-sizes", true);
-    dateSelector.append("label").text("To: ");
-    dateTo = appendDateSelector(dateSelector).classed("to", true);
-    const today = getToday();
-    const t1 = applyDaysDiff(today, -20);
-    const t2 = applyDaysDiff(today, 10);
-    dateFrom.property('value', toISODateString(t1));
-    dateTo.property('value', toISODateString(t2));
-
-    // Category selectors
-    const categorySelector1 = covid19.append("div").classed("category-selector", true).classed("margined", true);
-    appendCategorySelector(categorySelector1).classed("daily-cases-checkbox", true).property("checked", false);
-    categorySelector1.append("label").text(" Daily Cases");
-    appendCategorySelector(categorySelector1).classed("daily-deaths-checkbox", true).property("checked", false);
-    categorySelector1.append("label").text(" Daily Deaths");
-
-    const categorySelector2 = covid19.append("div").classed("category-selector", true).classed("margined", true);
-    appendCategorySelector(categorySelector2).classed("total-cases-checkbox", true).property("checked", false);
-    categorySelector2.append("label").text(" Total Cases");
-    appendCategorySelector(categorySelector2).classed("total-deaths-checkbox", true).property("checked", true);
-    categorySelector2.append("label").text(" Total Deaths");
 
     // SVG
     const svg = covid19.append("svg")
@@ -495,6 +448,44 @@ function runCovid19() {
     svg.append("g").attr("class", "daily-deaths-lines");
     svg.append("g").attr("class", "total-cases-lines");
     svg.append("g").attr("class", "total-deaths-lines");
+
+    // Category selectors
+    const csparent = covid19.append("table").classed("category-selector", true).classed("margined", true).append("tr");
+    const addcs = function (category, text, checked) {
+        const label = csparent.append("td").append("label");
+        label.append("input")
+          .attr("type", "checkbox")
+          .on("change", updateCovid19)
+          .classed(category + "-checkbox", true)
+          .property("checked", checked);
+        label.append("span").text(text);
+    }
+    addcs("daily-cases",  "Daily Cases", false);
+    addcs("daily-deaths", "Daily Deaths", false);
+    addcs("total-cases",  "Total Cases", false);
+    addcs("total-deaths", "Total Deaths", true);
+
+    // Sync selector
+    const syncSelector = covid19.append("div").classed("sync-selector", true).classed("margined", true);
+    syncSelector.append("p").text("Sync at ");
+    syncSelector
+        .append("input")
+        .attr("type", "number")
+        .attr("min", "0")
+        .property("value", "100")
+        .on("change", updateCovid19);
+    syncSelector.append("p").text("th death");
+
+    // Date selectors
+    const dateSelector = covid19.append("div").classed("date-selector", true).classed("margined", true);
+    dateSelector.append("p").text("Date range: ");
+    dateFrom = appendDateSelector(dateSelector).classed("from", true);
+    dateTo = appendDateSelector(dateSelector).classed("to", true);
+    const today = getToday();
+    const t1 = applyDaysDiff(today, -20);
+    const t2 = applyDaysDiff(today, 10);
+    dateFrom.property('value', toISODateString(t1));
+    dateTo.property('value', toISODateString(t2));
 
     updateCovid19();
     window.addEventListener("resize", updateCovid19);
