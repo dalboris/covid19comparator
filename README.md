@@ -18,7 +18,7 @@ rights, please let me know at (dalboris gmail com).
 
 # How to update data?
 
-You need Python3 and BeautifulSoup 4:
+You need Python 3.6+ and BeautifulSoup 4:
 
 ```
 pip3 install lxml
@@ -28,8 +28,7 @@ pip3 install beautifulsoup4
 Then:
 
 ```
-./scrape_data.sh
-./jsonify_data.py
+./update_data.py
 ```
 
 This populates the `data` folder with updated `csv` and `json` files, which
