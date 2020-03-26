@@ -202,7 +202,7 @@ function updateCovid19() {
         if (syncDateFounds[0]) {
             if (syncDateFounds[j]) {
                 numDaysDiff = computeDaysDiff(syncDates[j], syncDates[0]);
-                for (let i = 1; i < allData.length; ++i) {
+                for (let i = 0; i < allData.length; ++i) {
                     allData[i][j].values.forEach(function (d) {
                         d.date = applyDaysDiff(d.date, numDaysDiff);
                     });
