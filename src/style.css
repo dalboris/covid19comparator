@@ -34,6 +34,8 @@ h1, h2, h3, label {
 
 p.author {
     color: #555;
+    margin-top: 0px;
+    margin-bottom: 5px;
 }
 
 p.table-legend {

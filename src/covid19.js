@@ -169,7 +169,7 @@ function maxValue(dateFilter, data) {
 
 function updateCovid19() {
 
-    const covid19 = d3.select("div#covid19");
+    const covid19 = d3.select("#app");
 
     // Data
     const regions = getSelectedRegions(covid19);
@@ -431,7 +431,7 @@ function runCovid19() {
 
     prepareData();
 
-    const covid19 = d3.select("#covid19");
+    const covid19 = d3.select("#app");
 
     // Region selectors
     const regions = getAllRegions();
