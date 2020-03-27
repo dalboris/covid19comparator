@@ -295,3 +295,19 @@ table.category-selector {
 .x.axis path.domain {
     display: none;
 }
+
+.footer {
+    border-top: solid 1px #ddd;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.footer p {
+    display: inline-block;
+    color: #555;
+    font-size: 11px;
+}
+
+.footer p a {
+    color: #4776ce;
+}

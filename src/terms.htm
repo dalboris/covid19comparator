@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COVID-19 Comparator</title>
+    <meta name="description" content="Compare number of cases and/or deaths of COVID-19 (a.k.a. coronavirus) across countries.">
+    <meta name="author" content="Boris Dalstein Software">
+    <meta property="og:title" content="COVID-19 Comparator | Terms of Service">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://www.covid19comparator.com/ogimage.jpg">
+    <meta property="og:description"content="Exponential growth is deceptive: it looks slow at the beginning, but then in a matter of days you get thousands of deaths. This comparator allows you understand exponential growth, and understand why it is so important to enter lockdown as soon as possible.">
+    <meta property="og:url" content="https://www.covid19comparator.com">
+    <meta property="fb:app_id" content="2612365515654859">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto:300,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/d3js/5.15.0/d3.min.js"></script>
+    <script src="covid19.js"></script>
+  </head>
+  <body>
+    <script>
+      // Integration to Facebook analytics
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '2612365515654859',
+          cookie     : true,
+          xfbml      : true,
+          version    : 'v6.0'
+        });
+        FB.AppEvents.logPageView();
+      };
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <div class="text">
+
+      <h1>Terms of Service</h1>
+
+      <p>This Website (<a
+      href="https://www.covid19comparator.com">covid19comparator.com</a>) is
+      non-commercial, and is purely for educational and academic research
+      purposes. It is made available for free for anyone with an Internet
+      connection. It allows you to understand what exponential growth means,
+      and compare the number of cases and deaths of COVID-19 across countries.
+      We (the developers of the website, see <a
+      href="https://github.com/dalboris/covid19comparator"
+      target="_blank">github.com/dalboris/covid19comparator</a> for details)
+      offer no warranty on the accuracy of the data, and no warranty that the
+      data will continue to be updated regularly.</p>
+
+      <p>THIS WEBSITE AND SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF
+      ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+      WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+      NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+      LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+      OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+      WITH THE WEBSITE OR SOFTWARE OR THE USE OR OTHER DEALINGS IN THE WEBSITE
+      OR SOFTWARE.</p>
+
+      <p><a href=".">Go back to main page</a></p>
+    </div>
+    <div class="text footer">
+      <p>Copyright 2020 Boris Dalstein</p>
+      <p><a href="terms.htm">Terms</a></p>
+      <p><a href="privacy.htm">Privacy</a></p>
+    </div>
+  </body>
+</html>
