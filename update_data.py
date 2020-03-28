@@ -12,7 +12,8 @@ import urllib.request
 
 def download(url):
     print("Dowloading " + url + "...")
-    response = urllib.request.urlopen(url)
+    request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    response = urllib.request.urlopen(request)
     response_bytes = response.read()
     text = response_bytes.decode('utf-8')
     print("OK")
