@@ -350,21 +350,31 @@ function updateCovid19() {
     }
 }
 
-function handleMouseMove(d, i) {
+function handleMouseOrTouchMove(x) {
     const covid19 = d3.select("#app");
-    let x = d3.mouse(this)[0];
 
     // Compute the highlighted date for each region
-    const dates = []
+    const dates = [];
+    let i = 0;
     for (let j = 0; j < xScales_.length; ++j) {
         const xScale_ = xScales_[j];
         const d1 = xScale_.domain()[0];
-        const d2 = xScale_.domain()[1];
-        const width = xScale_.range()[1];
-        const n = computeDaysDiff(d1, d2);
-        const i = Math.round(x * n / width);
-        x = Math.round(i * width / n) + 0.5;
-
+        if (j == 0) {
+            // We only need to compute i once. Indeed, all xScales have the same
+            // range and the same domain length. The only difference is that
+            // their domains are offset from one another.
+            const d2 = xScale_.domain()[1];
+            const width = xScale_.range()[1];
+            const n = computeDaysDiff(d1, d2);
+            if (x < 0) {
+                x = 0;
+            }
+            else if (x > width) {
+                x = width;
+            }
+            i = Math.round(x * n / width);
+            x = Math.round(i * width / n) + 0.5;
+        }
         const date = applyDaysDiff(d1, i);
         dates.push(toISODateString(date));
     }
@@ -376,7 +386,6 @@ function handleMouseMove(d, i) {
             const date = dates[dataInfo.id];
             let value = "";
             dataInfo.values.forEach(function (d2) {
-                //console.log(d2);
                 if (toISODateString(d2.originaldate) == date) {
                     value = d2.value;
                 }
@@ -393,6 +402,16 @@ function handleMouseMove(d, i) {
         .attr("x2", x)
         .attr("y1", yScale_.range()[0])
         .attr("y2", yScale_.range()[1]);
+}
+
+function handleMouseMove(d, i) {
+    let x = d3.mouse(this)[0];
+    handleMouseOrTouchMove(x);
+}
+
+function handleTouchMove(d, i) {
+    let x = d3.touches(this)[0][0];
+    handleMouseOrTouchMove(x);
 }
 
 function handleMouseLeave(d, i) {
@@ -551,7 +570,8 @@ function runCovid19() {
     svg.append("g").attr("class", "y axis");
 
     const chart = svg.append("g").classed("chart-area", true)
-        .on("touchmove mousemove", handleMouseMove)
+        .on("mousemove", handleMouseMove)
+        .on("touchstart touchmove", handleTouchMove, {passive: true})
         .on("touchend mouseleave", handleMouseLeave);
 
     // Background (also used to capture mouse events)
