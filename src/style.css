@@ -270,22 +270,36 @@ table.category-selector {
     stroke-width: 3px;
 }
 
-.line-0  { stroke: #ff4343; } .x.axis-0  { color: #ff4343; }
-.line-1  { stroke: #437fff; } .x.axis-1  { color: #437fff; }
-.line-2  { stroke: #488638; } .x.axis-2  { color: #488638; }
-.line-3  { stroke: #61a5a4; } .x.axis-3  { color: #61a5a4; }
-.line-4  { stroke: #e23df9; } .x.axis-4  { color: #e23df9; }
-.line-5  { stroke: #fa0d1d; } .x.axis-5  { color: #fa0d1d; }
-.line-6  { stroke: #c6a1bb; } .x.axis-6  { color: #c6a1bb; }
-.line-7  { stroke: #d6c51c; } .x.axis-7  { color: #d6c51c; }
-.line-8  { stroke: #28985f; } .x.axis-8  { color: #28985f; }
-.line-9  { stroke: #5acb89; } .x.axis-9  { color: #5acb89; }
-.line-10 { stroke: #b5026c; } .x.axis-10 { color: #b5026c; }
-.line-11 { stroke: #c8dab4; } .x.axis-11 { color: #c8dab4; }
-.line-12 { stroke: #1e1dd5; } .x.axis-12 { color: #1e1dd5; }
-.line-13 { stroke: #f287a6; } .x.axis-13 { color: #f287a6; }
-.line-14 { stroke: #ec40f2; } .x.axis-14 { color: #ec40f2; }
-.line-15 { stroke: #ed2f0f; } .x.axis-15 { color: #ed2f0f; }
+.line-0  { stroke: #ff4343; } .region-id-0  { color: #ff4343; }
+.line-1  { stroke: #437fff; } .region-id-1  { color: #437fff; }
+.line-2  { stroke: #488638; } .region-id-2  { color: #488638; }
+.line-3  { stroke: #61a5a4; } .region-id-3  { color: #61a5a4; }
+.line-4  { stroke: #e23df9; } .region-id-4  { color: #e23df9; }
+.line-5  { stroke: #fa0d1d; } .region-id-5  { color: #fa0d1d; }
+.line-6  { stroke: #c6a1bb; } .region-id-6  { color: #c6a1bb; }
+.line-7  { stroke: #d6c51c; } .region-id-7  { color: #d6c51c; }
+.line-8  { stroke: #28985f; } .region-id-8  { color: #28985f; }
+.line-9  { stroke: #5acb89; } .region-id-9  { color: #5acb89; }
+.line-10 { stroke: #b5026c; } .region-id-10 { color: #b5026c; }
+.line-11 { stroke: #c8dab4; } .region-id-11 { color: #c8dab4; }
+.line-12 { stroke: #1e1dd5; } .region-id-12 { color: #1e1dd5; }
+.line-13 { stroke: #f287a6; } .region-id-13 { color: #f287a6; }
+.line-14 { stroke: #ec40f2; } .region-id-14 { color: #ec40f2; }
+.line-15 { stroke: #ed2f0f; } .region-id-15 { color: #ed2f0f; }
+
+.chart-background {
+    fill: rgba(0, 0, 0, 0);
+}
+
+.highlighted-date {
+    visibility: hidden;
+    stroke: #bbb;
+    stroke-width: 1px;
+}
+
+.highlighted-date.on {
+    visibility: visible;
+}
 
 .x-axis-domain {
     stroke: #000;
@@ -294,6 +308,11 @@ table.category-selector {
 .x.axis g.tick line,
 .x.axis path.domain {
     display: none;
+}
+
+.data-info {
+    font-size: 11px;
+    fill: currentColor;
 }
 
 .footer {

@@ -158,6 +158,9 @@ function maxValue(dateFilter, data) {
     return res;
 }
 
+const xScales_ = [];
+let yScale_ = null;
+const dataInfoData_ = [];
 function updateCovid19() {
 
     const covid19 = d3.select("#app");
@@ -168,6 +171,15 @@ function updateCovid19() {
     const dailyDeathsData = getData("new_deaths", regions);
     const totalCasesData = getData("total_cases", regions);
     const totalDeathsData = getData("total_deaths", regions);
+
+    // Add captions
+    const allData = [dailyCasesData, dailyDeathsData, totalCasesData, totalDeathsData];
+    for (let j = 0; j < regions.length; ++j) {
+        allData[0][j].caption = "Daily Cases";
+        allData[1][j].caption = "Daily Deaths";
+        allData[2][j].caption = "Total Cases";
+        allData[3][j].caption = "Total Deaths";
+    }
 
     // Sync
     const syncNum = covid19.select(".sync-selector input").property("value");
@@ -186,15 +198,14 @@ function updateCovid19() {
         syncDateFounds.push(syncDateFound);
         syncDates.push(syncDate);
     }
-    const allData = [dailyCasesData, dailyDeathsData, totalCasesData, totalDeathsData];
-    syncDaysDiffs.push(0);
-    for (let j = 1; j < regions.length; ++j) {
+    for (let j = 0; j < regions.length; ++j) {
         let numDaysDiff = 0;
         if (syncDateFounds[0]) {
             if (syncDateFounds[j]) {
                 numDaysDiff = computeDaysDiff(syncDates[j], syncDates[0]);
                 for (let i = 0; i < allData.length; ++i) {
                     allData[i][j].values.forEach(function (d) {
+                        d.originaldate = d.date;
                         d.date = applyDaysDiff(d.date, numDaysDiff);
                     });
                 }
@@ -251,6 +262,14 @@ function updateCovid19() {
         yMax = Math.max(yMax, maxTotalDeaths);
     }
     yScale.domain([0, yMax]);
+    yScale_ = yScale;
+
+    // Background
+    svg.select(".chart-background")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height);
 
     // Y Axis
     const yaxis = d3.axisLeft().scale(yScale);
@@ -265,11 +284,13 @@ function updateCovid19() {
 
     // X Axis dates
     const dateDy = 40;
+    xScales_.length = 0;
     for (let j = 0; j < regions.length; ++j) {
         const xScale_ = d3.scaleTime().range([0, width]);
         xScale_.domain([
             applyDaysDiff(dateFrom, -syncDaysDiffs[j]),
             applyDaysDiff(dateTo, -syncDaysDiffs[j])]);
+        xScales_.push(xScale_);
 
         const xaxis = d3.axisBottom()
             .ticks(d3.timeDay.every(1))
@@ -292,6 +313,92 @@ function updateCovid19() {
     updateLines(covid19, "daily-deaths", xScale, yScale, dateFrom, dateTo, dailyDeathsData);
     updateLines(covid19, "total-cases", xScale, yScale, dateFrom, dateTo, totalCasesData);
     updateLines(covid19, "total-deaths", xScale, yScale, dateFrom, dateTo, totalDeathsData);
+
+    // Data info
+    dataInfoData_.length = 0;
+    const dataInfoDy = 15;
+    let dataInfoX = 10;
+    let dataInfoY = 10;
+    const dataInfos = covid19.select(".data-infos");
+    dataInfos.selectAll(".data-info").remove();
+    for (let j = 0; j < regions.length; ++j) {
+        const addDataInfo = function(data) {
+            dataInfos.append("text")
+                .attr("class", "data-info region-id-" + j)
+                .attr("x", dataInfoX)
+                .attr("y", dataInfoY)
+                .append("tspan");
+            dataInfoData_.push(data[j]);
+        };
+        if (hasCategory(covid19, "daily-cases")) {
+            addDataInfo(dailyCasesData);
+            dataInfoY += dataInfoDy;
+        }
+        if (hasCategory(covid19, "daily-deaths")) {
+            addDataInfo(dailyDeathsData);
+            dataInfoY += dataInfoDy;
+        }
+        if (hasCategory(covid19, "total-cases")) {
+            addDataInfo(totalCasesData);
+            dataInfoY += dataInfoDy;
+        }
+        if (hasCategory(covid19, "total-deaths")) {
+            addDataInfo(totalDeathsData);
+            dataInfoY += dataInfoDy;
+        }
+        dataInfoY += dataInfoDy;
+    }
+}
+
+function handleMouseMove(d, i) {
+    const covid19 = d3.select("#app");
+    let x = d3.mouse(this)[0];
+
+    // Compute the highlighted date for each region
+    const dates = []
+    for (let j = 0; j < xScales_.length; ++j) {
+        const xScale_ = xScales_[j];
+        const d1 = xScale_.domain()[0];
+        const d2 = xScale_.domain()[1];
+        const width = xScale_.range()[1];
+        const n = computeDaysDiff(d1, d2);
+        const i = Math.round(x * n / width);
+        x = Math.round(i * width / n) + 0.5;
+
+        const date = applyDaysDiff(d1, i);
+        dates.push(toISODateString(date));
+    }
+
+    // Data info
+    covid19.selectAll(".data-info").select("tspan")
+        .text(function (d1, i) {
+            const dataInfo = dataInfoData_[i];
+            const date = dates[dataInfo.id];
+            let value = "";
+            dataInfo.values.forEach(function (d2) {
+                //console.log(d2);
+                if (toISODateString(d2.originaldate) == date) {
+                    value = d2.value;
+                }
+            })
+
+            //console.log(d.id)
+            return dataInfo.caption + ": " + value;
+        });
+
+    // Highlighed date
+    covid19.select(".highlighted-date")
+        .classed("on", true)
+        .attr("x1", x)
+        .attr("x2", x)
+        .attr("y1", yScale_.range()[0])
+        .attr("y2", yScale_.range()[1]);
+}
+
+function handleMouseLeave(d, i) {
+    const covid19 = d3.select("#app");
+    covid19.selectAll(".data-info").select("tspan").text("");
+    covid19.select(".highlighted-date").classed("on", false);
 }
 
 // Convert data from:
@@ -406,7 +513,7 @@ function getToday() {
 // Returns a new date by offsetting the given date by numDays.
 function applyDaysDiff(date, numDays) {
     const res = new Date(date);
-    res.setDate(res.getDate() + numDays);
+    res.setUTCDate(res.getUTCDate() + numDays);
     return res;
 }
 
@@ -439,15 +546,28 @@ function runCovid19() {
     // Axes
     const xAxes = svg.append("g").attr("class", "x axes");
     xAxes.append("line").attr("class", "x-axis-domain");
-    xAxes.append("g").attr("class", "x axis axis-0");
-    xAxes.append("g").attr("class", "x axis axis-1");
+    xAxes.append("g").attr("class", "x axis axis-0 region-id-0");
+    xAxes.append("g").attr("class", "x axis axis-1 region-id-1");
     svg.append("g").attr("class", "y axis");
 
+    const chart = svg.append("g").classed("chart-area", true)
+        .on("touchmove mousemove", handleMouseMove)
+        .on("touchend mouseleave", handleMouseLeave);
+
+    // Background (also used to capture mouse events)
+    chart.append("rect").classed("chart-background", true);
+
+    // Highlighted date
+    chart.append("line").classed("highlighted-date", true).classed("on", false);
+
     // Lines
-    svg.append("g").attr("class", "daily-cases-lines");
-    svg.append("g").attr("class", "daily-deaths-lines");
-    svg.append("g").attr("class", "total-cases-lines");
-    svg.append("g").attr("class", "total-deaths-lines");
+    chart.append("g").attr("class", "daily-cases-lines");
+    chart.append("g").attr("class", "daily-deaths-lines");
+    chart.append("g").attr("class", "total-cases-lines");
+    chart.append("g").attr("class", "total-deaths-lines");
+
+    // Data info
+    chart.append("g").classed("data-infos", true);
 
     // Category selectors
     const csparent = covid19.append("table").classed("category-selector", true).classed("margined", true).append("tr");
