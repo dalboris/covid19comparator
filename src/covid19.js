@@ -468,8 +468,8 @@ function prepareData() {
         }
     }
     let dateRange = [];
-    for (var d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) {
-        dateRange.push(new Date(d));
+    for (var d = new Date(minDate); d <= maxDate; d = applyDaysDiff(d, 1)) {
+        dateRange.push(d);
     }
 
     // Fill in blank data and compute dailies from totals
