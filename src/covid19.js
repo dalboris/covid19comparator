@@ -295,7 +295,7 @@ function updateCovid19() {
     // Y Axis
     const yaxis = d3.axisLeft().scale(yScale);
     if (isLogScale(covid19)) {
-        yaxis.ticks(5, ",.1r");
+        yaxis.ticks(4, ",.1r");
     }
     svg.select(".y.axis").call(yaxis);
 
