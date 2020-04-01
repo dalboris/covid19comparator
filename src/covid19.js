@@ -240,8 +240,8 @@ function updateCovid19() {
 
     // SVG Element
     const totalWidth = covid19.node().getBoundingClientRect().width;
-    const marginLeft = 50;
-    const marginRight = 50;
+    const marginLeft = 55;
+    const marginRight = 55;
     const marginTop = 30;
     const marginBottom = 100;
     const width = totalWidth - marginLeft - marginRight;
@@ -295,7 +295,10 @@ function updateCovid19() {
     // Y Axis
     const yaxis = d3.axisLeft().scale(yScale);
     if (isLogScale(covid19)) {
-        yaxis.ticks(4, ",.1r");
+        // Ensure that all major ticks are shown (1, 10, 100, 1000, etc.),
+        // but no minor ticks are shown (20, 30, ...)
+        const count = Math.round(Math.log10(yMax));
+        yaxis.ticks(count, ",.1r");
     }
     svg.select(".y.axis").call(yaxis);
 
