@@ -118,8 +118,13 @@ function hasCategory(covid19, category) {
     return covid19.select("." + category + "-checkbox").property("checked");
 }
 
+function isLogScale(covid19) {
+    return covid19.select(".log-radio").property("checked");
+}
+
 function updateLines(covid19, category, xScale, yScale, dateFrom, dateTo, data) {
     const lineGroup = covid19.select("." + category + "-lines");
+    const isLog = isLogScale(covid19);
     if (hasCategory(covid19, category)) {
         lineGroup.style("visibility", "visible");
 
@@ -137,7 +142,12 @@ function updateLines(covid19, category, xScale, yScale, dateFrom, dateTo, data) 
 
         lineGroup.selectAll(".line").attr("d", function(d) {
             return line(d.values.filter(function (d) {
-                return dateFrom <= d.date && d.date <= dateTo;
+                if (isLog && d.value == 0) {
+                    return false;
+                }
+                else {
+                    return dateFrom <= d.date && d.date <= dateTo;
+                }
             }));
         });
     }
@@ -246,7 +256,6 @@ function updateCovid19() {
 
     // Scales
     const xScale = d3.scaleTime().range([0, width]);
-    const yScale = d3.scaleLinear().rangeRound([height, 0]);
     xScale.domain([dateFrom, dateTo]);
     let yMax = 0;
     if (hasCategory(covid19, "daily-cases")) {
@@ -261,7 +270,19 @@ function updateCovid19() {
     if (hasCategory(covid19, "total-deaths")) {
         yMax = Math.max(yMax, maxTotalDeaths);
     }
-    yScale.domain([0, yMax]);
+    let yScale = null;
+    if (isLogScale(covid19)) {
+        yScale = d3.scaleLog().rangeRound([height, 0]);
+        yScale.tickFormat(10, "");
+        yScale.domain([1, yMax]);
+        yScale.nice();
+    }
+    else {
+        yScale = d3.scaleLinear();
+        yScale.rangeRound([height, 0]);
+        yScale.domain([0, yMax]);
+        yScale.nice();
+    }
     yScale_ = yScale;
 
     // Background
@@ -273,6 +294,9 @@ function updateCovid19() {
 
     // Y Axis
     const yaxis = d3.axisLeft().scale(yScale);
+    if (isLogScale(covid19)) {
+        yaxis.ticks(5, ",.1r");
+    }
     svg.select(".y.axis").call(yaxis);
 
     // X Axis horizontal bar
@@ -626,6 +650,22 @@ function runCovid19() {
     const t2 = applyDaysDiff(today, 10);
     dateFrom.property('value', toISODateString(t1));
     dateTo.property('value', toISODateString(t2));
+
+    // Scale selectors (Linear vs. Logarithmic)
+    const ssparent = covid19.append("table").classed("scale-selector", true).classed("margined", true).append("tr");
+    const addss = function (scaletype, text, checked) {
+        const label = ssparent.append("td").append("label");
+        label.append("input")
+          .attr("type", "radio")
+          .attr("name", "scaletype")
+          .attr("value", text)
+          .on("change", updateCovid19)
+          .classed(scaletype + "-radio", true)
+          .property("checked", checked);
+        label.append("span").text(text);
+    }
+    addss("linear",  "Linear", true);
+    addss("log", "Logarithmic", false);
 
     updateCovid19();
     window.addEventListener("resize", updateCovid19);
