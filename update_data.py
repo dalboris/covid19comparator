@@ -3,21 +3,46 @@
 
 from bs4 import BeautifulSoup
 from pathlib import Path
+from socket import timeout
 import csv
 import datetime
 import json
 import re
+import time
 import urllib.request
 
 
+def printDownloadError(error, tryagain, exception):
+    print(f"Error: {error}.")
+    if tryagain > 0:
+        print(f"Trying again {tryagain} times.")
+    else:
+        raise exception
+
+
 def download(url):
-    print("Dowloading " + url + "...")
-    request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    response = urllib.request.urlopen(request)
-    response_bytes = response.read()
-    text = response_bytes.decode('utf-8')
-    print("OK")
-    return text
+    tryagain = 3
+    while tryagain > 0:
+        tryagain -= 1;
+        print("Downloading " + url + "...")
+        request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        try:
+            response = urllib.request.urlopen(url, timeout=10).read().decode('utf-8')
+        except urllib.error.HTTPError as error:
+            if error.code == 404:
+                raise
+            else:
+                printDownloadError(error, tryagain, error)
+        except urllib.error.URLError as error:
+            printDownloadError(error, tryagain, error)
+        except timeout:
+            printDownloadError("Timeout", tryagain, timeout)
+        else:
+            response = urllib.request.urlopen(request, timeout=10)
+            response_bytes = response.read()
+            text = response_bytes.decode('utf-8')
+            print("OK")
+            return text
 
 
 class JohnHopkinsDailyReport:
@@ -267,6 +292,7 @@ def populateCategoryFromWorldometers(text, seriesName, region, category, latest,
 
 
 def populateRegionFromWorldometers(regionurl, region, data):
+
     url = 'https://www.worldometers.info/coronavirus/country/' + regionurl + '/'
     text = download(url)
     soup = BeautifulSoup(text, 'lxml')
@@ -320,6 +346,6 @@ def populateDataFromWorldometers(data):
 if __name__ == "__main__":
     data = {}
     populateDataFromJohnHopkins(data)
-    populateDataFromWorldometers(data)
+    #populateDataFromWorldometers(data)
     json_file = Path("data/data.json")
     json_file.write_text(json.dumps(data, ensure_ascii=False))

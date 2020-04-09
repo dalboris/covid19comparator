@@ -2,15 +2,11 @@
 
 A website to compare cases and/or deaths of covid19 between countries. This
 website is non-commercial and purely for educational and academic research
-purposes. The data comes from the following sources:
+purposes. The data comes from the following source:
 
 - https://github.com/CSSEGISandData/COVID-19
 
   Copyright 2020 Johns Hopkins University
-
-- https://www.worldometers.info/coronavirus/
-
-  Copyright 2020 Worldometers.info
 
 Thank you so much for the effort of compiling this data and making it
 available. If you are a copyright holder and believe that I am infringing any
