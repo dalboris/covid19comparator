@@ -45,13 +45,13 @@ def download(url):
             return text
 
 
-class JohnHopkinsDailyReport:
+class JohnsHopkinsDailyReport:
     def __init__(self, date, text):
         self.date = date
         self.text = text
 
 
-def getJohnHopkinsDailyReports():
+def getJohnsHopkinsDailyReports():
     reports = []
     firstdate = datetime.date(2020,1,22)
     lastdate = None
@@ -63,18 +63,18 @@ def getJohnHopkinsDailyReports():
         filepath = Path("data/jhu") / ourfilename
         if filepath.exists():
             text = filepath.read_text()
-            reports.append(JohnHopkinsDailyReport(date, text))
+            reports.append(JohnsHopkinsDailyReport(date, text))
             lastdate = date
         else:
             url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/" + urlfilename
             try:
                 text = download(url)
                 filepath.write_text(text)
-                reports.append(JohnHopkinsDailyReport(date, text))
+                reports.append(JohnsHopkinsDailyReport(date, text))
                 lastdate = date
             except urllib.error.HTTPError as err:
                 if err.code == 404:
-                    print("John Hopkins University's daily report for " + date.isoformat() + " not available yet");
+                    print("Johns Hopkins University's daily report for " + date.isoformat() + " not available yet");
                 else:
                     raise
         date += datetime.timedelta(days=1)
@@ -102,7 +102,7 @@ def getJohnHopkinsDailyReports():
 # which we didn't take the time to implement (only very few cases/deaths before
 # 2020-03-10 anyway).
 #
-def populateDateFromJohnHopkins(date, text, data):
+def populateDateFromJohnsHopkins(date, text, data):
     if text.startswith(u'\ufeff'):
         text = text[1:] # Remove BOM if any (https://en.wikipedia.org/wiki/Byte_order_mark)
     oldformat = (date < datetime.date(2020,3,22))
@@ -235,11 +235,11 @@ def populateDateFromJohnHopkins(date, text, data):
         data[region]["total_deaths"][isodate] = d["total_deaths"]
 
 
-# Note: we only use JohnHopkins for per-state/province data for Canada and the US
-def populateDataFromJohnHopkins(data):
-    reports = getJohnHopkinsDailyReports()
+# Note: we only use JohnsHopkins for per-state/province data for Canada and the US
+def populateDataFromJohnsHopkins(data):
+    reports = getJohnsHopkinsDailyReports()
     for report in reports:
-        populateDateFromJohnHopkins(report.date, report.text, data)
+        populateDateFromJohnsHopkins(report.date, report.text, data)
 
 
 def counterToInt(counter):
@@ -345,7 +345,7 @@ def populateDataFromWorldometers(data):
 
 if __name__ == "__main__":
     data = {}
-    populateDataFromJohnHopkins(data)
+    populateDataFromJohnsHopkins(data)
     #populateDataFromWorldometers(data)
     json_file = Path("data/data.json")
     json_file.write_text(json.dumps(data, ensure_ascii=False))
